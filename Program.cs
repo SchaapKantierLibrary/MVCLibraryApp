@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using MVCLibraryApp.Models; // replace with your actual namespace if different
+
 namespace MVCLibraryApp
 {
     public class Program
@@ -8,6 +11,10 @@ namespace MVCLibraryApp
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Register the DbContext
+            builder.Services.AddDbContext<LibraryContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 

@@ -1,0 +1,53 @@
+﻿namespace MVCLibraryApp.Models
+{
+    using Microsoft.EntityFrameworkCore;
+
+    public class LibraryContext : DbContext
+    {
+        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
+        {
+        }
+
+        public DbSet<BezoekerModel> Bezoekers { get; set; }
+        public DbSet<MedewerkerModel> Medewerkers { get; set; }
+        public DbSet<ItemModel> Items { get; set; }
+        public DbSet<LocatieModel> Locaties { get; set; }
+        public DbSet<AbonnementModel> Abonnementen { get; set; }
+        public DbSet<LeningModel> Lenings { get; set; }
+        public DbSet<ReserveringModel> Reserveringen { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BezoekerModel>()
+                .HasOne(b => b.Abonnement)
+                .WithMany(a => a.Bezoekers)
+                .HasForeignKey(b => b.AbonnementID);
+
+            modelBuilder.Entity<ItemModel>()
+                .HasOne(i => i.Locatie)
+                .WithMany(l => l.Items)
+                .HasForeignKey(i => i.LocatieID);
+
+            modelBuilder.Entity<LeningModel>()
+                .HasOne(l => l.Bezoeker)
+                .WithMany(b => b.Lenings)
+                .HasForeignKey(l => l.BezoekerID);
+
+            modelBuilder.Entity<LeningModel>()
+                .HasOne(l => l.Item)
+                .WithMany(i => i.Lenings)
+                .HasForeignKey(l => l.ItemID);
+
+            modelBuilder.Entity<ReserveringModel>()
+                .HasOne(r => r.Bezoeker)
+                .WithMany(b => b.Reserverings)
+                .HasForeignKey(r => r.BezoekerID);
+
+            modelBuilder.Entity<ReserveringModel>()
+                .HasOne(r => r.Item)
+                .WithMany(i => i.Reserverings)
+                .HasForeignKey(r => r.ItemID);
+        }
+    }
+
+}
