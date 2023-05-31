@@ -45,9 +45,17 @@ namespace MVCLibraryApp
 
             app.UseAuthorization();
 
+
+            app.MapControllerRoute(
+    name: "logout",
+    pattern: "Account/Logout",
+    defaults: new { controller = "Bezoeker", action = "Logout" }
+);
+
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}"
+            );
 
             app.Run();
         }
