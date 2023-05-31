@@ -64,7 +64,41 @@ namespace MVCLibraryApp.Controllers
             // If the model state is not valid, return the registration view with errors
             return View(model);
         }
+
+        // route to dashboard
+        [Authorize]
         public IActionResult Dashboard()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Dashboard");
+                }
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "Your account is locked out. Please try again later.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                }
+            }
+
+            // If the model state is not valid or login failed, return the login view with errors
+            return View(model);
+        }
+        // route to login
+        public IActionResult Login()
         {
             return View();
         }
