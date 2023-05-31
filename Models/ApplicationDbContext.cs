@@ -1,10 +1,13 @@
-﻿namespace MVCLibraryApp.Models
-{
-    using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-    public class LibraryContext : DbContext
+namespace MVCLibraryApp.Models
+{
+    public class ApplicationDbContext : IdentityDbContext<BezoekerModel>
     {
-        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
         {
         }
 
@@ -18,6 +21,8 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<BezoekerModel>()
                 .HasOne(b => b.Abonnement)
                 .WithMany(a => a.Bezoekers)
@@ -49,5 +54,4 @@
                 .HasForeignKey(r => r.ItemID);
         }
     }
-
 }

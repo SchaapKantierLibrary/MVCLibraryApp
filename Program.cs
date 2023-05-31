@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using MVCLibraryApp.Models; // replace with your actual namespace if different
+using MVCLibraryApp.Models;
 
 namespace MVCLibraryApp
 {
@@ -12,9 +15,15 @@ namespace MVCLibraryApp
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // Register the DbContext
-            builder.Services.AddDbContext<LibraryContext>(options =>
+            // Register the ApplicationDbContext DbContext
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Register the ApplicationDbContext DbContext and Identity services
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDefaultIdentity<BezoekerModel>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var app = builder.Build();
 
@@ -30,6 +39,9 @@ namespace MVCLibraryApp
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            // Add authentication
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
