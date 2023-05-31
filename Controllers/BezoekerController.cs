@@ -51,7 +51,7 @@ namespace MVCLibraryApp.Controllers
                     // await _signInManager.SignInAsync(user, isPersistent: false);
 
                     // Redirect to a success page or return a success response
-                    return RedirectToAction("RegistrationSuccess");
+                    return RedirectToAction("Dashboard");
                 }
 
                 // If registration fails, add model errors to display in the view
@@ -63,6 +63,10 @@ namespace MVCLibraryApp.Controllers
 
             // If the model state is not valid, return the registration view with errors
             return View(model);
+        }
+        public IActionResult Dashboard()
+        {
+            return View();
         }
     }
 }
