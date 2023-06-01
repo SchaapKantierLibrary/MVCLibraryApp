@@ -20,10 +20,19 @@ namespace MVCLibraryApp.Controllers
             _signInManager = signInManager;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
+            // Check if the user is already authenticated
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Dashboard");
+            }
+
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -56,9 +65,16 @@ namespace MVCLibraryApp.Controllers
             // If registration fails, redirect to the login page
             return RedirectToAction("Login", "Bezoeker");
         }
+
         [Authorize]
         public async Task<IActionResult> Dashboard()
         {
+            // Check if the user is authenticated
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Register", "Bezoeker");
+            }
+
             var user = await _userManager.GetUserAsync(User);
 
             ViewData["UserName"] = user.Naam;
@@ -68,6 +84,7 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -95,8 +112,16 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
+            // Check if the user is already authenticated
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Dashboard");
+            }
+
             return View();
         }
 
