@@ -56,6 +56,12 @@ namespace MVCLibraryApp
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}"
             );
+            app.MapControllerRoute(
+    name: "dashboard",
+    pattern: "Bezoeker/Dashboard",
+    defaults: new { controller = "Bezoeker", action = "Dashboard" }
+);
+
 
             app.Run();
         }
