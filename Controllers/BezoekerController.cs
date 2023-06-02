@@ -33,7 +33,6 @@ namespace MVCLibraryApp.Controllers
             return View();
         }
 
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -62,9 +61,10 @@ namespace MVCLibraryApp.Controllers
                 }
             }
 
-            // If registration fails, redirect to the login page
-            return RedirectToAction("Login", "Bezoeker");
+            // If registration fails, return to the registration view with the model
+            return View(model);
         }
+
         [Authorize]
         public async Task<IActionResult> Dashboard()
         {
@@ -77,6 +77,7 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -126,3 +127,4 @@ namespace MVCLibraryApp.Controllers
         }
     }
 }
+
