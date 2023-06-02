@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace MVCLibraryApp
 {
@@ -20,10 +21,15 @@ namespace MVCLibraryApp
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Register the ApplicationDbContext DbContext and Identity services
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddDefaultIdentity<BezoekerModel>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // Configure cookies and authentication options
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Bezoeker/Login";
+                options.LoginPath = "/Bezoeker/Login";
+            });
 
             var app = builder.Build();
 
@@ -31,7 +37,6 @@ namespace MVCLibraryApp
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -45,12 +50,11 @@ namespace MVCLibraryApp
 
             app.UseAuthorization();
 
-
             app.MapControllerRoute(
-    name: "logout",
-    pattern: "Account/Logout",
-    defaults: new { controller = "Bezoeker", action = "Logout" }
-);
+                name: "logout",
+                pattern: "Account/Logout",
+                defaults: new { controller = "Bezoeker", action = "Logout" }
+            );
 
             app.MapControllerRoute(
                 name: "default",
