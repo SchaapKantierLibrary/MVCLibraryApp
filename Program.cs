@@ -1,3 +1,5 @@
+// Programmeurs: Quinten Schaap, S1190289. Robin Kantier, S1186143.
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.Extensions.DependencyInjection;
