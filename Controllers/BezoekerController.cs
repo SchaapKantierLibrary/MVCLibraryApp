@@ -77,7 +77,6 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
