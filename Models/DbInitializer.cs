@@ -20,6 +20,9 @@ public static class DbInitializer
 
         // Seed Locations
         SeedLocations(context);
+
+        // Seed Items
+        SeedItems(context);
     }
 
     private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
@@ -65,6 +68,33 @@ public static class DbInitializer
         };
 
             context.Locaties.AddRange(locaties);
+            context.SaveChanges();
+        }
+    }
+    private static void SeedItems(ApplicationDbContext context)
+    {
+        var faker = new Bogus.Faker();
+
+        // Check if Items already exist
+        if (!context.Items.Any())
+        {
+            for (int locId = 1; locId <= 4; locId++)
+            {
+                for (int i = 0; i < 25; i++)
+                {
+                    var item = new ItemModel
+                    {
+                        Titel = faker.Lorem.Sentence(3),
+                        Auteur = faker.Name.FullName(),
+                        Publicatiejaar = faker.Random.Int(1980, 2023),
+                        Status = faker.PickRandom(new[] { "Available", "Not Available" }),
+                        LocatieID = locId
+                    };
+
+                    context.Items.Add(item);
+                }
+            }
+
             context.SaveChanges();
         }
     }
