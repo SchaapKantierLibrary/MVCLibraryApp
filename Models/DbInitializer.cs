@@ -106,6 +106,23 @@ public static class DbInitializer
         {
             userManager.AddToRoleAsync(adminUser, "Beheerder").Wait();
         }
+        // Seed Medewerker
+        var MedewerkerUser = new BezoekerModel
+        {
+            UserName = "Medewerker@example.com",
+            Email = "Medewerker@example.com",
+            AbonnementID = 1,
+            Naam = "Medewerker" // Provide a non-null value for the Naam property
+        };
+
+        var MedewerkerPassword = "Password123!";
+
+        var MedewerkerUserResult = userManager.CreateAsync(MedewerkerUser, MedewerkerPassword).Result;
+
+        if (adminUserResult.Succeeded)
+        {
+            userManager.AddToRoleAsync(MedewerkerUser, "Medewerker").Wait();
+        }
     }
 
 

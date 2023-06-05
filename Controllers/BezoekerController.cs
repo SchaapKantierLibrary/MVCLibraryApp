@@ -24,12 +24,20 @@ namespace MVCLibraryApp.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
             // Check if the user is already authenticated
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Dashboard");
+                var user = await _userManager.GetUserAsync(User);
+                var roles = await _userManager.GetRolesAsync(user);
+
+                if (roles.Contains("Beheerder"))
+                    return RedirectToAction("Dashboard", "Beheerder");
+                if (roles.Contains("Medewerker"))
+                    return RedirectToAction("Dashboard", "Medewerker");
+                if (roles.Contains("Bezoeker"))
+                    return RedirectToAction("Dashboard", "Bezoeker");
             }
 
             return View();
@@ -69,7 +77,7 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Bezoeker")]
         public async Task<IActionResult> Dashboard()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -95,15 +103,17 @@ namespace MVCLibraryApp.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
-                        if (await _userManager.IsInRoleAsync(user, "Bezoeker"))
+                        var roles = await _userManager.GetRolesAsync(user);
+
+                        if (roles.Contains("Bezoeker"))
                         {
                             return RedirectToAction("Dashboard", "Bezoeker");
                         }
-                        else if (await _userManager.IsInRoleAsync(user, "Medewerker"))
+                        else if (roles.Contains("Medewerker"))
                         {
                             return RedirectToAction("Dashboard", "Medewerker");
                         }
-                        else if (await _userManager.IsInRoleAsync(user, "Beheerder"))
+                        else if (roles.Contains("Beheerder"))
                         {
                             return RedirectToAction("Dashboard", "Beheerder");
                         }
@@ -126,16 +136,25 @@ namespace MVCLibraryApp.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             // Check if the user is already authenticated
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Dashboard");
+                var user = await _userManager.GetUserAsync(User);
+                var roles = await _userManager.GetRolesAsync(user);
+
+                if (roles.Contains("Beheerder"))
+                    return RedirectToAction("Dashboard", "Beheerder");
+                if (roles.Contains("Medewerker"))
+                    return RedirectToAction("Dashboard", "Medewerker");
+                if (roles.Contains("Bezoeker"))
+                    return RedirectToAction("Dashboard", "Bezoeker");
             }
 
             return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
