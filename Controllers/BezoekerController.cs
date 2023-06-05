@@ -80,13 +80,15 @@ namespace MVCLibraryApp.Controllers
         [Authorize(Roles = "Bezoeker")]
         public async Task<IActionResult> Dashboard()
         {
-            var user = await _userManager.GetUserAsync(User);
+            ViewBag.Locations = _context.Locaties.ToList();
+            return View();
+        }
 
-            ViewData["UserName"] = user.Naam;
-            ViewData["Email"] = user.Email;
-            ViewData["UserID"] = user.Id;
-            ViewData["MembershipStatus"] = user.Lidmaatschapsstatus;
-
+        [HttpPost]
+        public IActionResult Dashboard(int locationId)
+        {
+            ViewBag.Locations = _context.Locaties.ToList();
+            ViewBag.Items = _context.Items.Where(i => i.LocatieID == locationId).ToList();
             return View();
         }
 

@@ -8,7 +8,7 @@
         <select id="locationDropdown" class="form-control" name="locationId">
             @foreach (var location in ViewBag.Locations)
             {
-                <option value="@location.ID">@location.Name</option>
+                <option value="@location.ID">@location.Beschrijving</option>
             }
         </select>
         <button type="submit" class="btn btn-primary">Show Items</button>
