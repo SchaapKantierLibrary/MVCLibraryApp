@@ -2,9 +2,26 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome, @ViewData["UserName"]!</h1>
-    <p>Email: @ViewData["Email"]</p>
-    <p>User ID: @ViewData["UserID"]</p>
-    <p>Membership Status: @ViewData["MembershipStatus"]</p>
+<div class="my-4">
+    <h2>Where are you?</h2>
+    <form method="post" action="@Url.Action("Dashboard", "Home")">
+        <select id="locationDropdown" class="form-control" name="locationId">
+            @foreach (var location in ViewBag.Locations)
+            {
+                <option value="@location.ID">@location.Name</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-primary">Show Items</button>
+    </form>
 </div>
+
+@if (ViewBag.Items != null && ViewBag.Items.Count() > 0)
+{
+    <h2>Items:</h2>
+    <ul>
+        @foreach (var item in ViewBag.Items)
+        {
+            <li>@item.Titel</li>
+        }
+    </ul>
+}
