@@ -16,6 +16,8 @@ public static class DbInitializer
 
         // Seed users
         SeedUsersAndRoles(userManager, roleManager);
+
+
     }
 
     private static void SeedRoles(RoleManager<IdentityRole> roleManager)
@@ -86,6 +88,23 @@ public static class DbInitializer
                     await userManager.AddToRoleAsync(user, "Bezoeker");
                 }
             }
+        }
+        // Seed admin user
+        var adminUser = new BezoekerModel
+        {
+            UserName = "admin@example.com",
+            Email = "admin@example.com",
+            AbonnementID = 1,
+            Naam = "Admin User" // Provide a non-null value for the Naam property
+        };
+
+        var adminPassword = "Password123!";
+
+        var adminUserResult = userManager.CreateAsync(adminUser, adminPassword).Result;
+
+        if (adminUserResult.Succeeded)
+        {
+            userManager.AddToRoleAsync(adminUser, "Beheerder").Wait();
         }
     }
 

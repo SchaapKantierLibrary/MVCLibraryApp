@@ -302,7 +302,15 @@ namespace MVCLibraryApp.Migrations
                         principalTable: "Medewerkers",
                         principalColumn: "ID");
 
-                 
+                    // seed abbonementen.
+                    migrationBuilder.Sql(@"
+        INSERT INTO Abonnementen (Type, MaximaleItems, Uitleentermijn, Verlengingen, Reserveringskosten, Boetekosten, Abonnementskosten)
+        VALUES
+            ('Free', 1, 21, 3, 0.00, 0.00, 0.00),
+            ('Jeugd', -1, 21, 3, 0.25, 0.00, 5.00),
+            ('Budget', 10, 21, 1, 0.25, 0.30, 10.00),
+            ('Basis', -1, 21, 3, 0.25, 0.30, 15.00);
+    ");
                 });
 
             migrationBuilder.CreateIndex(
