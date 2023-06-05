@@ -1,31 +1,33 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MVCLibraryApp.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 public static class DbInitializer
 {
-    public static void Initialize(ApplicationDbContext context, UserManager<BezoekerModel> userManager, RoleManager<IdentityRole> roleManager)
+    public static async Task Initialize(ApplicationDbContext context, UserManager<BezoekerModel> userManager, RoleManager<IdentityRole> roleManager)
     {
         context.Database.EnsureCreated();
 
         // Seed roles
-        SeedRoles(roleManager);
+        await SeedRoles(roleManager);
 
         // Seed Abonnementen
         SeedAbonnementen(context);
 
         // Seed users
-        SeedUsersAndRoles(userManager, roleManager);
+        await SeedUsersAndRoles(userManager, roleManager);
 
-
+        // Seed Locations
+        SeedLocations(context);
     }
 
-    private static void SeedRoles(RoleManager<IdentityRole> roleManager)
+    private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
     {
-        if (!roleManager.RoleExistsAsync("Bezoeker").Result)
+        if (!(await roleManager.RoleExistsAsync("Bezoeker")))
         {
             IdentityRole role = new IdentityRole { Name = "Bezoeker" };
-            IdentityResult result = roleManager.CreateAsync(role).Result;
+            IdentityResult result = await roleManager.CreateAsync(role);
         }
 
         // Add more roles here if needed
@@ -45,6 +47,24 @@ public static class DbInitializer
             };
 
             context.Abonnementen.AddRange(abonnementen);
+            context.SaveChanges();
+        }
+    }
+
+    private static void SeedLocations(ApplicationDbContext context)
+    {
+        // Check if Locations already exist
+        if (!context.Locaties.Any())
+        {
+            var locaties = new[]
+            {
+            new LocatieModel { Beschrijving = "Noord" },
+            new LocatieModel { Beschrijving = "Oost" },
+            new LocatieModel { Beschrijving = "West" },
+            new LocatieModel { Beschrijving = "Zuid" }
+        };
+
+            context.Locaties.AddRange(locaties);
             context.SaveChanges();
         }
     }
@@ -71,7 +91,7 @@ public static class DbInitializer
             var userName = $"user{i}@example.com";
             var password = $"Password123!";
 
-            if (userManager.FindByNameAsync(userName).Result == null)
+            if ((await userManager.FindByNameAsync(userName)) == null)
             {
                 var user = new BezoekerModel
                 {
@@ -100,11 +120,11 @@ public static class DbInitializer
 
         var adminPassword = "Password123!";
 
-        var adminUserResult = userManager.CreateAsync(adminUser, adminPassword).Result;
+        var adminUserResult = await userManager.CreateAsync(adminUser, adminPassword);
 
         if (adminUserResult.Succeeded)
         {
-            userManager.AddToRoleAsync(adminUser, "Beheerder").Wait();
+            await userManager.AddToRoleAsync(adminUser, "Beheerder");
         }
         // Seed Medewerker
         var MedewerkerUser = new BezoekerModel
@@ -117,14 +137,11 @@ public static class DbInitializer
 
         var MedewerkerPassword = "Password123!";
 
-        var MedewerkerUserResult = userManager.CreateAsync(MedewerkerUser, MedewerkerPassword).Result;
+        var MedewerkerUserResult = await userManager.CreateAsync(MedewerkerUser, MedewerkerPassword);
 
-        if (adminUserResult.Succeeded)
+        if (MedewerkerUserResult.Succeeded)
         {
-            userManager.AddToRoleAsync(MedewerkerUser, "Medewerker").Wait();
+            await userManager.AddToRoleAsync(MedewerkerUser, "Medewerker");
         }
     }
-
-
-
 }
