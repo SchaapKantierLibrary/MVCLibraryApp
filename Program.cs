@@ -24,7 +24,8 @@ namespace MVCLibraryApp
 
             // Register the ApplicationDbContext DbContext and Identity services
             builder.Services.AddDefaultIdentity<BezoekerModel>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Configure cookies and authentication options
             builder.Services.ConfigureApplicationCookie(options =>
@@ -63,11 +64,29 @@ namespace MVCLibraryApp
                 pattern: "{controller=Home}/{action=Index}/{id?}"
             );
             app.MapControllerRoute(
-    name: "dashboard",
-    pattern: "Bezoeker/Dashboard",
-    defaults: new { controller = "Bezoeker", action = "Dashboard" }
+        name: "dashboard",
+        pattern: "Bezoeker/Dashboard",
+         defaults: new { controller = "Bezoeker", action = "Dashboard" }
 );
 
+
+                using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            // Initialize roles
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Create roles on startup
+            string[] roleNames = { "Bezoeker", "Medewerker", "Beheerder" };
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = roleManager.RoleExistsAsync(roleName).Result;
+                if (!roleExist)
+                {
+                    // Create the roles and seed them to the database
+                    var roleResult = roleManager.CreateAsync(new IdentityRole(roleName)).Result;
+                }
+            }
 
             app.Run();
         }

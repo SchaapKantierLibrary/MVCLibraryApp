@@ -12,12 +12,14 @@ namespace MVCLibraryApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BezoekerModel> _userManager;
         private readonly SignInManager<BezoekerModel> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager)
+        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -51,6 +53,8 @@ namespace MVCLibraryApp.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    // Adding the user to the 'Bezoeker' role
+                    await _userManager.AddToRoleAsync(user, "Bezoeker");
                     await _signInManager.SignInAsync(user, isPersistent: false); // Log in the user
                     return RedirectToAction("Dashboard");
                 }
