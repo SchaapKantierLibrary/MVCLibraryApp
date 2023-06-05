@@ -92,7 +92,22 @@ namespace MVCLibraryApp.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Dashboard");
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    if (user != null)
+                    {
+                        if (await _userManager.IsInRoleAsync(user, "Bezoeker"))
+                        {
+                            return RedirectToAction("Dashboard", "Bezoeker");
+                        }
+                        else if (await _userManager.IsInRoleAsync(user, "Medewerker"))
+                        {
+                            return RedirectToAction("Dashboard", "Medewerker");
+                        }
+                        else if (await _userManager.IsInRoleAsync(user, "Beheerder"))
+                        {
+                            return RedirectToAction("Dashboard", "Beheerder");
+                        }
+                    }
                 }
 
                 if (result.IsLockedOut)
@@ -107,6 +122,7 @@ namespace MVCLibraryApp.Controllers
 
             return View(model);
         }
+
 
         [HttpGet]
         [AllowAnonymous]

@@ -6,12 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
 
 namespace MVCLibraryApp
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +25,8 @@ namespace MVCLibraryApp
 
             // Register the ApplicationDbContext DbContext and Identity services
             builder.Services.AddDefaultIdentity<BezoekerModel>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Configure cookies and authentication options
             builder.Services.ConfigureApplicationCookie(options =>
@@ -63,32 +64,28 @@ namespace MVCLibraryApp
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}"
             );
+
             app.MapControllerRoute(
-        name: "dashboard",
-        pattern: "Bezoeker/Dashboard",
-         defaults: new { controller = "Bezoeker", action = "Dashboard" }
-);
+                name: "dashboard",
+                pattern: "Bezoeker/Dashboard",
+                defaults: new { controller = "Bezoeker", action = "Dashboard" }
+            );
 
-
-                using var scope = app.Services.CreateScope();
+            using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
 
-            // Initialize roles
+            var userManager = services.GetRequiredService<UserManager<BezoekerModel>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // Create roles on startup
-            string[] roleNames = { "Bezoeker", "Medewerker", "Beheerder" };
-            foreach (var roleName in roleNames)
-            {
-                var roleExist = roleManager.RoleExistsAsync(roleName).Result;
-                if (!roleExist)
-                {
-                    // Create the roles and seed them to the database
-                    var roleResult = roleManager.CreateAsync(new IdentityRole(roleName)).Result;
-                }
-            }
+            await SeedDataAsync(userManager, roleManager);
 
             app.Run();
         }
+
+        private static async Task SeedDataAsync(UserManager<BezoekerModel> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            await DbInitializer.SeedUsersAndRoles(userManager, roleManager);
+        }
+
     }
 }
