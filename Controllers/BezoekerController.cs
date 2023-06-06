@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -80,15 +81,16 @@ namespace MVCLibraryApp.Controllers
         [Authorize(Roles = "Bezoeker")]
         public async Task<IActionResult> Dashboard()
         {
-            ViewBag.Locations = _context.Locaties.ToList();
+            ViewBag.Locations = await _context.Locaties.ToListAsync();
+            ViewBag.Items = new List<ItemModel>(); // Send an empty list to the view
             return View();
         }
 
         [HttpPost]
-        public IActionResult Dashboard(int locationId)
+        public async Task<IActionResult> Dashboard(int locationId)
         {
-            ViewBag.Locations = _context.Locaties.ToList();
-            ViewBag.Items = _context.Items.Where(i => i.LocatieID == locationId).ToList();
+            ViewBag.Locations = await _context.Locaties.ToListAsync();
+            ViewBag.Items = await _context.Items.Where(i => i.LocatieID == locationId).ToListAsync();
             return View();
         }
 

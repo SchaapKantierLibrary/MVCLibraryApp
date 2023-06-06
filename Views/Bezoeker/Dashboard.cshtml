@@ -4,7 +4,7 @@
 
 <div class="my-4">
     <h2>Where are you?</h2>
-    <form method="post" action="@Url.Action("Dashboard", "Home")">
+    <form method="post" action="@Url.Action("Dashboard", "Bezoeker")">
         <select id="locationDropdown" class="form-control" name="locationId">
             @foreach (var location in ViewBag.Locations)
             {
@@ -15,13 +15,13 @@
     </form>
 </div>
 
-@if (ViewBag.Items != null && ViewBag.Items.Count() > 0)
+@if (ViewBag.Items != null && ViewBag.Items.Count > 0)
 {
     <h2>Items:</h2>
     <ul>
         @foreach (var item in ViewBag.Items)
         {
-            <li>@item.Titel</li>
+            <li><a href="@Url.Action("ViewItem", "Bezoeker", new { id = item.ID })">@item.Titel</a></li>
         }
     </ul>
 }
