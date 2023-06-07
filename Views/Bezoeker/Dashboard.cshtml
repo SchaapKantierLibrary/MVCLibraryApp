@@ -5,7 +5,7 @@
 <div class="my-4">
     <h2>Where are you?</h2>
     <form method="post" action="@Url.Action("Dashboard", "Bezoeker")">
-        <input type="hidden" name="selectedLocationId" value="@ViewBag.SelectedLocationId" /> 
+        <input type="hidden" name="selectedLocationId" value="@ViewBag.SelectedLocationId" />
         <select id="locationDropdown" class="form-control" name="locationId">
             @foreach (var location in ViewBag.Locations)
             {
@@ -19,8 +19,9 @@
                 }
             }
         </select>
-        <input type="text" class="form-control" name="title" value="" placeholder="" />  <!-- Add value attribute -->
-        <button type="submit" class="btn btn-primary">Show Items</button>
+        <input type="text" class="form-control" name="title" value="" placeholder="Search Items" />
+        <input type="text" class="form-control" name="authorSearch" value="" placeholder="Search authors" />
+        <button type="submit" class="btn btn-primary">Search</button>
     </form>
 </div>
 

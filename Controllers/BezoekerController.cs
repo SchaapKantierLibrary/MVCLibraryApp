@@ -79,46 +79,72 @@ namespace MVCLibraryApp.Controllers
         }
 
         [Authorize(Roles = "Bezoeker")]
-        public async Task<IActionResult> Dashboard(string title = "")
+        public async Task<IActionResult> Dashboard(string title = "", string authorSearch = "")
         {
-            ViewBag.Title = title; // Add this line
+            ViewBag.Title = title;
+            ViewBag.AuthorSearch = authorSearch;
             ViewBag.Locations = await _context.Locaties.ToListAsync();
-            ViewBag.Items = string.IsNullOrEmpty(title)
-    ?           await _context.Items.Include(i => i.Auteur).ToListAsync() // Retrieve all items
-    :           await _context.Items.Include(i => i.Auteur)
-             .Where(i => i.Titel.Contains(title))
-             .ToListAsync();
+
+            IQueryable<ItemModel> itemsQuery = _context.Items.Include(i => i.Auteur);
+
+            if (!string.IsNullOrEmpty(authorSearch))
+            {
+                var authorIds = _context.Auteurs
+                    .Where(a => a.Name.Contains(authorSearch))
+                    .Select(a => a.ID);
+
+                itemsQuery = itemsQuery.Where(i => authorIds.Contains(i.AuteurID));
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                itemsQuery = itemsQuery.Where(i => i.Titel.Contains(title));
+            }
+
+            ViewBag.Items = await itemsQuery.ToListAsync();
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Dashboard(int locationId, string title)
+        public async Task<IActionResult> Dashboard(int locationId, string title, string authorSearch)
         {
             ViewBag.Locations = await _context.Locaties.ToListAsync();
-            ViewBag.SelectedLocationId = locationId;  // Keep selected location
-            ViewBag.Title = title; // Keep searched title
+            ViewBag.SelectedLocationId = locationId;
+            ViewBag.Title = title;
+            ViewBag.AuthorSearch = authorSearch;
 
-            if (string.IsNullOrEmpty(title)) // If title is empty, show all items in selected location
-            {
-                ViewBag.Items = await _context.Items.Include(i => i.Auteur).Where(i => i.LocatieID == locationId).ToListAsync();
-            }
-            else  // If title is not empty, search items in selected location with the title
-            {
-                ViewBag.Items = await _context.Items.Include(i => i.Auteur)
-                    .Where(i => i.LocatieID == locationId && i.Titel.Contains(title))
-                    .ToListAsync();
+            IQueryable<ItemModel> itemsQuery;
 
-                // If no items were found in selected location, search in all locations
-                if (ViewBag.Items.Count == 0)
-                {
-                    ViewBag.Items = await _context.Items.Include(i => i.Auteur)
-                        .Where(i => i.Titel.Contains(title))
-                        .ToListAsync();
-                }
+            // If title or authorSearch is provided, don't filter by location.
+            if (!string.IsNullOrEmpty(authorSearch) || !string.IsNullOrEmpty(title))
+            {
+                itemsQuery = _context.Items.Include(i => i.Auteur);
             }
+            else
+            {
+                itemsQuery = _context.Items.Include(i => i.Auteur).Where(i => i.LocatieID == locationId);
+            }
+
+            if (!string.IsNullOrEmpty(authorSearch))
+            {
+                var authorIds = _context.Auteurs
+                    .Where(a => a.Name.Contains(authorSearch))
+                    .Select(a => a.ID);
+
+                itemsQuery = itemsQuery.Where(i => authorIds.Contains(i.AuteurID));
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                itemsQuery = itemsQuery.Where(i => i.Titel.Contains(title));
+            }
+
+            ViewBag.Items = await itemsQuery.ToListAsync();
 
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
