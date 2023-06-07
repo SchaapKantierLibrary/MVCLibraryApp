@@ -5,12 +5,21 @@
 <div class="my-4">
     <h2>Where are you?</h2>
     <form method="post" action="@Url.Action("Dashboard", "Bezoeker")">
+        <input type="hidden" name="selectedLocationId" value="@ViewBag.SelectedLocationId" /> 
         <select id="locationDropdown" class="form-control" name="locationId">
             @foreach (var location in ViewBag.Locations)
             {
-                <option value="@location.ID">@location.Beschrijving</option>
+                if (location.ID == ViewBag.SelectedLocationId)
+                {
+                    <option value="@location.ID" selected>@location.Beschrijving</option>
+                }
+                else
+                {
+                    <option value="@location.ID">@location.Beschrijving</option>
+                }
             }
         </select>
+        <input type="text" class="form-control" name="title" value="" placeholder="Titel" />  <!-- Add value attribute -->
         <button type="submit" class="btn btn-primary">Show Items</button>
     </form>
 </div>

@@ -79,18 +79,36 @@ namespace MVCLibraryApp.Controllers
         }
 
         [Authorize(Roles = "Bezoeker")]
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard(string title = "")
         {
+            ViewBag.Title = title; // Add this line
             ViewBag.Locations = await _context.Locaties.ToListAsync();
-            ViewBag.Items = new List<ItemModel>(); // Send an empty list to the view
+            ViewBag.Items = string.IsNullOrEmpty(title)
+                ? await _context.Items.ToListAsync() // Retrieve all items
+                : await _context.Items
+                    .Where(i => i.Titel.Contains(title))
+                    .ToListAsync();
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Dashboard(int locationId)
+        public async Task<IActionResult> Dashboard(int locationId, string title)
         {
             ViewBag.Locations = await _context.Locaties.ToListAsync();
-            ViewBag.Items = await _context.Items.Where(i => i.LocatieID == locationId).ToListAsync();
+            ViewBag.SelectedLocationId = locationId;  // Keep selected location
+            ViewBag.Title = title; // Keep searched title
+
+            if (string.IsNullOrEmpty(title)) // If title is empty, show all items in selected location
+            {
+                ViewBag.Items = await _context.Items.Where(i => i.LocatieID == locationId).ToListAsync();
+            }
+            else  // If title is not empty, search items in selected location with the title
+            {
+                ViewBag.Items = await _context.Items
+                    .Where(i => i.LocatieID == locationId && i.Titel.Contains(title))
+                    .ToListAsync();
+            }
+
             return View();
         }
 
