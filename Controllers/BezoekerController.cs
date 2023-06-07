@@ -107,6 +107,14 @@ namespace MVCLibraryApp.Controllers
                 ViewBag.Items = await _context.Items
                     .Where(i => i.LocatieID == locationId && i.Titel.Contains(title))
                     .ToListAsync();
+
+                // If no items were found in selected location, search in all locations
+                if (ViewBag.Items.Count == 0)
+                {
+                    ViewBag.Items = await _context.Items
+                        .Where(i => i.Titel.Contains(title))
+                        .ToListAsync();
+                }
             }
 
             return View();
