@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace MVCLibraryApp.Models
 {
     public class ApplicationDbContext : IdentityDbContext<BezoekerModel>
@@ -36,7 +35,7 @@ namespace MVCLibraryApp.Models
 
             modelBuilder.Entity<LeningModel>()
                 .HasOne(l => l.Bezoeker)
-                .WithMany(b => b.Lenings)
+                .WithMany(b => b.Lenings) 
                 .HasForeignKey(l => l.BezoekerID);
 
             modelBuilder.Entity<LeningModel>()
@@ -58,6 +57,81 @@ namespace MVCLibraryApp.Models
                 .HasOne(i => i.Auteur)
                 .WithMany(a => a.Items)
                 .HasForeignKey(i => i.AuteurID);
+
+            // Call the seed method
+            SeedData(modelBuilder);
+        }
+
+        private static void SeedData(ModelBuilder modelBuilder)
+        {
+            // Seed Abonnementen
+            modelBuilder.Entity<AbonnementModel>().HasData(
+                new AbonnementModel
+                {
+                    ID = -1,
+                    Type = "Free",
+                    MaximaleItems = 1,
+                    Uitleentermijn = 21,
+                    Verlengingen = 3,
+                    Reserveringskosten = 0.00,
+                    Boetekosten = 0.00,
+                    Abonnementskosten = 0.00
+                },
+                new AbonnementModel
+                {
+                    ID = -2,
+                    Type = "Jeugd",
+                    MaximaleItems = -1,
+                    Uitleentermijn = 21,
+                    Verlengingen = 3,
+                    Reserveringskosten = 0.25,
+                    Boetekosten = 0.00,
+                    Abonnementskosten = 5.00
+                },
+                new AbonnementModel
+                {
+                    ID = -3,
+                    Type = "Budget",
+                    MaximaleItems = 10,
+                    Uitleentermijn = 21,
+                    Verlengingen = 1,
+                    Reserveringskosten = 0.25,
+                    Boetekosten = 0.30,
+                    Abonnementskosten = 10.00
+                },
+                new AbonnementModel
+                {
+                    ID = -4,
+                    Type = "Basis",
+                    MaximaleItems = -1,
+                    Uitleentermijn = 21,
+                    Verlengingen = 3,
+                    Reserveringskosten = 0.25,
+                    Boetekosten = 0.30,
+                    Abonnementskosten = 15.00
+                }
+            );
+
+            // Seed Locations
+            modelBuilder.Entity<LocatieModel>().HasData(
+                new LocatieModel { Beschrijving = "Noord" },
+                new LocatieModel { Beschrijving = "Oost" },
+                new LocatieModel { Beschrijving = "West" },
+                new LocatieModel { Beschrijving = "Zuid" }
+            );
+
+            var faker = new Bogus.Faker();
+            for (int i = 1; i <= 100; i++)
+            {
+                modelBuilder.Entity<AuteurModel>().HasData(
+                    new AuteurModel
+                    {
+                        ID = -i, // Use negative values for ID
+                        Name = faker.Name.FullName(),
+                        Bio = faker.Lorem.Paragraph()
+                    }
+                );
+            }
         }
     }
 }
