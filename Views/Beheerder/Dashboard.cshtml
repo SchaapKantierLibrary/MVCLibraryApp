@@ -2,11 +2,41 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome, @ViewData["UserName"]!</h1>
-    <p>Email: @ViewData["Email"]</p>
-    <p>User ID: @ViewData["UserID"]</p>
-    <p>Membership Status: @ViewData["MembershipStatus"]</p>
+@{
+    List<BezoekerModel> bezoekers = ViewBag.Bezoekers;
+}
+@if (bezoekers != null && bezoekers.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bezoeker in bezoekers)
+            {
+                <tr>
+                    <td>@bezoeker.Id</td>
+                    <td>@bezoeker.Naam</td>
+                    <td>@bezoeker.Naam</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = bezoeker.Id })
+                        @Html.ActionLink("Delete", "Delete", new { id = bezoeker.Id })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No bezoekers found.</p>
+}
 
-    <p>You are an Beheerder</p>
-</div>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
