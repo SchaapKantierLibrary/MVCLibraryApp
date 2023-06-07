@@ -145,6 +145,30 @@ namespace MVCLibraryApp.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ReserveItem(int itemId)
+        {
+            var item = await _context.Items.FindAsync(itemId);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = new ReserveringModel
+            {
+                ItemID = item.ID,
+                BezoekerID = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                ReservationDate = DateTime.Now
+            };
+
+
+            _context.Reserveringen.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Dashboard));
+        }
+
 
         [HttpPost]
         [AllowAnonymous]
