@@ -146,10 +146,9 @@ namespace MVCLibraryApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ReserveItem(int itemId)
+        public async Task<IActionResult> ReserveItem(int id)
         {
-            var item = await _context.Items.FindAsync(itemId);
-
+            var item = await _context.Items.FindAsync(id);
             if (item == null)
             {
                 return NotFound();
@@ -162,9 +161,18 @@ namespace MVCLibraryApp.Controllers
                 ReservationDate = DateTime.Now
             };
 
+            // Change the status of the item to Not Available
+            item.Status = "Not Available";
 
-            _context.Reserveringen.Add(reservation);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Reserveringen.Add(reservation);
+                await _context.SaveChangesAsync(); // save changes in the database
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // handle exception
+            }
 
             return RedirectToAction(nameof(Dashboard));
         }
