@@ -142,12 +142,26 @@ namespace MVCLibraryApp.Controllers
 
             ViewBag.Items = await itemsQuery.ToListAsync();
 
+
+
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> ReserveItem(int id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Count the existing reservations for the current user
+            int existingReservations = _context.Reserveringen.Count(r => r.BezoekerID == userId);
+
+            if (existingReservations >= 3)
+            {
+                // You can return a specific error view, pass an error message to the view, or simply return BadRequest.
+                // Here I'm returning BadRequest with a simple error message.
+                return BadRequest("You already have 3 or more reservations.");
+            }
+
             var item = await _context.Items.FindAsync(id);
             if (item == null)
             {
@@ -157,7 +171,7 @@ namespace MVCLibraryApp.Controllers
             var reservation = new ReserveringModel
             {
                 ItemID = item.ID,
-                BezoekerID = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                BezoekerID = userId,
                 ReservationDate = DateTime.Now
             };
 

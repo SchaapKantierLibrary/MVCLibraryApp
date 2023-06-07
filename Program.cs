@@ -17,7 +17,9 @@ namespace MVCLibraryApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider(); // Add this line
+
+            builder.Services.AddSession(); // Add this line
 
             // Register the ApplicationDbContext DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -36,6 +38,9 @@ namespace MVCLibraryApp
             });
 
             var app = builder.Build();
+
+            // Use Session here
+            app.UseSession(); // Add this line
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
