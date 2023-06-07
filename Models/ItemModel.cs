@@ -4,7 +4,8 @@
     {
         public int ID { get; set; }
         public string Titel { get; set; }
-        public string Auteur { get; set; }
+        public int AuteurID { get; set; } // with these...
+        public AuteurModel Auteur { get; set; }
         public int Publicatiejaar { get; set; }
         public string Status { get; set; }
 

@@ -84,10 +84,10 @@ namespace MVCLibraryApp.Controllers
             ViewBag.Title = title; // Add this line
             ViewBag.Locations = await _context.Locaties.ToListAsync();
             ViewBag.Items = string.IsNullOrEmpty(title)
-                ? await _context.Items.ToListAsync() // Retrieve all items
-                : await _context.Items
-                    .Where(i => i.Titel.Contains(title))
-                    .ToListAsync();
+    ?           await _context.Items.Include(i => i.Auteur).ToListAsync() // Retrieve all items
+    :           await _context.Items.Include(i => i.Auteur)
+             .Where(i => i.Titel.Contains(title))
+             .ToListAsync();
             return View();
         }
 
@@ -100,18 +100,18 @@ namespace MVCLibraryApp.Controllers
 
             if (string.IsNullOrEmpty(title)) // If title is empty, show all items in selected location
             {
-                ViewBag.Items = await _context.Items.Where(i => i.LocatieID == locationId).ToListAsync();
+                ViewBag.Items = await _context.Items.Include(i => i.Auteur).Where(i => i.LocatieID == locationId).ToListAsync();
             }
             else  // If title is not empty, search items in selected location with the title
             {
-                ViewBag.Items = await _context.Items
+                ViewBag.Items = await _context.Items.Include(i => i.Auteur)
                     .Where(i => i.LocatieID == locationId && i.Titel.Contains(title))
                     .ToListAsync();
 
                 // If no items were found in selected location, search in all locations
                 if (ViewBag.Items.Count == 0)
                 {
-                    ViewBag.Items = await _context.Items
+                    ViewBag.Items = await _context.Items.Include(i => i.Auteur)
                         .Where(i => i.Titel.Contains(title))
                         .ToListAsync();
                 }
