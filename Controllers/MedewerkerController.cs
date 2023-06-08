@@ -22,9 +22,17 @@ namespace MVCLibraryApp.Controllers
         {
             var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
             var ReservedItems = _context.Items.Where(item => item.Status == "Not Available").ToList();
-            var loans = _context.Lenings.ToList();
+
+            // Here is where you fetch the loans
+            var loans = _context.Lenings.Include(l => l.Item)
+                                 .ThenInclude(i => i.Auteur)
+                                 .Include(l => l.Bezoeker)
+                                 .Where(l => l.Status == "Borrowed")  // Only include loans with status "Borrowed"
+                                 .ToList();
+
             var reservations = _context.Reserveringen.ToList();
             var users = _context.Users.ToList();
+
 
             ViewBag.AvailableItems = availableItems;
             ViewBag.ReservedItems = ReservedItems;
@@ -70,17 +78,11 @@ namespace MVCLibraryApp.Controllers
             // Redirect to the Dashboard view
             return RedirectToAction("Dashboard");
         }
-        public IActionResult ReturnItem()
-        {
-            // Implementation for returning an item
-            var borrowedItems = _context.Items.Where(item => item.Status == "Not Available").ToList();
-            return View(borrowedItems);
-        }
 
         [HttpPost]
         public IActionResult ReturnItem(int itemId)
         {
-            var lending = _context.Lenings.FirstOrDefault(l => l.ID == itemId);
+            var lending = _context.Lenings.Include(l => l.Item).FirstOrDefault(l => l.Item.ID == itemId);
             if (lending == null)
             {
                 return NotFound();
@@ -88,12 +90,13 @@ namespace MVCLibraryApp.Controllers
 
             lending.Status = "Returned";
             lending.Einddatum = DateTime.Now; // Set the end date as the current date
-                                              // Calculate any penalty costs if applicable
-                                              // ...
+            lending.Item.Status = "Available"; // Set the item status to Available
+                                               // Calculate any penalty costs if applicable
+                                               // ...
 
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(Dashboard));
+            return RedirectToAction("Dashboard");
         }
 
         // Items en Authors aanmaken en bewerken
