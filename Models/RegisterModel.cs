@@ -23,5 +23,6 @@ namespace MVCLibraryApp.Models
         [Required]
         public string Naam { get; set; }
 
+        public string SelectedRole { get; set; }
     }
 }
