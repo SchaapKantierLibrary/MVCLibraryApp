@@ -114,7 +114,7 @@ public static class DbInitializer
                         Titel = faker.Lorem.Sentence(3),
                         Auteur = faker.PickRandom(auteurs), // Pick a random author
                         Publicatiejaar = faker.Random.Int(1980, 2023),
-                        Status = faker.PickRandom(new[] { "Available", "Not Available" }),
+                        Status = "Available",
                         LocatieID = locId
                     };
 
