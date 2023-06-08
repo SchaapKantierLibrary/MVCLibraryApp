@@ -19,17 +19,17 @@ namespace MVCLibraryApp.Controllers
         // GET: ItemsController
         public async Task<ActionResult> Index(string searchString)
         {
-            var items = from i in _context.Items
-                        select i;
+            IQueryable<ItemModel> items = _context.Items.Include(i => i.Auteur);
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 items = items.Where(i => i.Titel.Contains(searchString)
-                                       || i.Auteur.Contains(searchString)
+                                       || i.Auteur.Name.Contains(searchString)
                                        || i.Locatie.Beschrijving.Contains(searchString));
             }
 
             return View(await items.ToListAsync());
         }
+
     }
 }

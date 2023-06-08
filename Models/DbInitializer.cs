@@ -21,6 +21,9 @@ public static class DbInitializer
         // Seed Locations
         SeedLocations(context);
 
+        // seed Auteurs
+        SeedAuteurs(context);
+        
         // Seed Items
         SeedItems(context);
     }
@@ -71,9 +74,33 @@ public static class DbInitializer
             context.SaveChanges();
         }
     }
+
+    private static void SeedAuteurs(ApplicationDbContext context)
+    {
+        var faker = new Bogus.Faker();
+
+        // Check if Auteurs already exist
+        if (!context.Auteurs.Any())
+        {
+            for (int i = 0; i < 100; i++) // Change 100 to however many authors you want to create
+            {
+                var auteur = new AuteurModel
+                {
+                     Name = faker.Name.FullName(),
+                     Bio = faker.Lorem.Paragraph()
+                };
+
+                context.Auteurs.Add(auteur);
+            }
+
+            context.SaveChanges();
+        }
+    }
+
     private static void SeedItems(ApplicationDbContext context)
     {
         var faker = new Bogus.Faker();
+        var auteurs = context.Auteurs.ToList(); // Get all the authors
 
         // Check if Items already exist
         if (!context.Items.Any())
@@ -85,7 +112,7 @@ public static class DbInitializer
                     var item = new ItemModel
                     {
                         Titel = faker.Lorem.Sentence(3),
-                        Auteur = faker.Name.FullName(),
+                        Auteur = faker.PickRandom(auteurs), // Pick a random author
                         Publicatiejaar = faker.Random.Int(1980, 2023),
                         Status = faker.PickRandom(new[] { "Available", "Not Available" }),
                         LocatieID = locId

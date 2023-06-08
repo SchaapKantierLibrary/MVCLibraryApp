@@ -79,20 +79,118 @@ namespace MVCLibraryApp.Controllers
         }
 
         [Authorize(Roles = "Bezoeker")]
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard(string title = "", string authorSearch = "")
         {
+            ViewBag.Title = title;
+            ViewBag.AuthorSearch = authorSearch;
             ViewBag.Locations = await _context.Locaties.ToListAsync();
-            ViewBag.Items = new List<ItemModel>(); // Send an empty list to the view
+
+            IQueryable<ItemModel> itemsQuery = _context.Items.Include(i => i.Auteur);
+
+            if (!string.IsNullOrEmpty(authorSearch))
+            {
+                var authorIds = _context.Auteurs
+                    .Where(a => a.Name.Contains(authorSearch))
+                    .Select(a => a.ID);
+
+                itemsQuery = itemsQuery.Where(i => authorIds.Contains(i.AuteurID));
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                itemsQuery = itemsQuery.Where(i => i.Titel.Contains(title));
+            }
+
+            ViewBag.Items = await itemsQuery.ToListAsync();
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Dashboard(int locationId)
+        public async Task<IActionResult> Dashboard(int locationId, string title, string authorSearch)
         {
             ViewBag.Locations = await _context.Locaties.ToListAsync();
-            ViewBag.Items = await _context.Items.Where(i => i.LocatieID == locationId).ToListAsync();
+            ViewBag.SelectedLocationId = locationId;
+            ViewBag.Title = title;
+            ViewBag.AuthorSearch = authorSearch;
+
+            IQueryable<ItemModel> itemsQuery;
+
+            // If title or authorSearch is provided, don't filter by location.
+            if (!string.IsNullOrEmpty(authorSearch) || !string.IsNullOrEmpty(title))
+            {
+                itemsQuery = _context.Items.Include(i => i.Auteur);
+            }
+            else
+            {
+                itemsQuery = _context.Items.Include(i => i.Auteur).Where(i => i.LocatieID == locationId);
+            }
+
+            if (!string.IsNullOrEmpty(authorSearch))
+            {
+                var authorIds = _context.Auteurs
+                    .Where(a => a.Name.Contains(authorSearch))
+                    .Select(a => a.ID);
+
+                itemsQuery = itemsQuery.Where(i => authorIds.Contains(i.AuteurID));
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                itemsQuery = itemsQuery.Where(i => i.Titel.Contains(title));
+            }
+
+            ViewBag.Items = await itemsQuery.ToListAsync();
+
+
+
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ReserveItem(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Count the existing reservations for the current user
+            int existingReservations = _context.Reserveringen.Count(r => r.BezoekerID == userId);
+
+            if (existingReservations >= 3)
+            {
+                // You can return a specific error view, pass an error message to the view, or simply return BadRequest.
+                // Here I'm returning BadRequest with a simple error message.
+                return BadRequest("You already have 3 or more reservations.");
+            }
+
+            var item = await _context.Items.FindAsync(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = new ReserveringModel
+            {
+                ItemID = item.ID,
+                BezoekerID = userId,
+                ReservationDate = DateTime.Now
+            };
+
+            // Change the status of the item to Not Available
+            item.Status = "Not Available";
+
+            try
+            {
+                _context.Reserveringen.Add(reservation);
+                await _context.SaveChangesAsync(); // save changes in the database
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // handle exception
+            }
+
+            return RedirectToAction(nameof(Dashboard));
+        }
+
 
         [HttpPost]
         [AllowAnonymous]

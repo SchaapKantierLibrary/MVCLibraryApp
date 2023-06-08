@@ -13,6 +13,7 @@ namespace MVCLibraryApp.Models
 
         public DbSet<BezoekerModel> Bezoekers { get; set; }
         public DbSet<MedewerkerModel> Medewerkers { get; set; }
+        public DbSet<AuteurModel> Auteurs { get; set; }
         public DbSet<ItemModel> Items { get; set; }
         public DbSet<LocatieModel> Locaties { get; set; }
         public DbSet<AbonnementModel> Abonnementen { get; set; }
@@ -52,6 +53,11 @@ namespace MVCLibraryApp.Models
                 .HasOne(r => r.Item)
                 .WithMany(i => i.Reserverings)
                 .HasForeignKey(r => r.ItemID);
+
+            modelBuilder.Entity<ItemModel>()
+                .HasOne(i => i.Auteur)
+                .WithMany(a => a.Items)
+                .HasForeignKey(i => i.AuteurID);
         }
     }
 }
