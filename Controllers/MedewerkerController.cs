@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MVCLibraryApp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,25 +21,11 @@ namespace MVCLibraryApp.Controllers
 
         public IActionResult Dashboard()
         {
-            var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
-            var ReservedItems = _context.Items.Where(item => item.Status == "Not Available").ToList();
+            var authors = _context.Auteurs.ToList();
+            var items = _context.Items.Include(i => i.Auteur).ToList();
 
-            // Here is where you fetch the loans
-            var loans = _context.Lenings.Include(l => l.Item)
-                                 .ThenInclude(i => i.Auteur)
-                                 .Include(l => l.Bezoeker)
-                                 .Where(l => l.Status == "Borrowed")  // Only include loans with status "Borrowed"
-                                 .ToList();
-
-            var reservations = _context.Reserveringen.ToList();
-            var users = _context.Users.ToList();
-
-
-            ViewBag.AvailableItems = availableItems;
-            ViewBag.ReservedItems = ReservedItems;
-            ViewBag.Loans = loans;
-            ViewBag.Reservations = reservations;
-            ViewBag.Users = users;
+            ViewBag.Authors = authors;
+            ViewBag.Items = items;
 
             return View();
         }
@@ -126,58 +113,46 @@ namespace MVCLibraryApp.Controllers
         // Items en Authors aanmaken en bewerken
         public IActionResult CreateItem()
         {
-            // Implementation for creating a new item
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
             return View();
         }
 
         [HttpPost]
         public IActionResult CreateItem(ItemModel model)
         {
-            // Logic for creating a new item
             if (ModelState.IsValid)
             {
                 _context.Items.Add(model);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
-            }
 
+                return RedirectToAction("ItemsList");
+            }
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
             return View(model);
         }
 
-        public IActionResult EditItem(int itemId)
+        public IActionResult EditItem(int id)
         {
-            // Implementation for editing an existing item
-            var item = _context.Items.FirstOrDefault(item => item.ID == itemId);
+            var item = _context.Items.Find(id);
             if (item == null)
             {
                 return NotFound();
             }
-
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
             return View(item);
         }
 
         [HttpPost]
         public IActionResult EditItem(ItemModel model)
         {
-            // Logic for editing an existing item
             if (ModelState.IsValid)
             {
-                var item = _context.Items.FirstOrDefault(item => item.ID == model.ID);
-                if (item == null)
-                {
-                    return NotFound();
-                }
-
-                // Update the item properties
-                item.Titel = model.Titel;
-                item.Auteur = model.Auteur;
-                item.Locatie = model.Locatie;
-                // ... update other properties
-
+                _context.Items.Update(model);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
-            }
 
+                return RedirectToAction("ItemsList");
+            }
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
             return View(model);
         }
 
