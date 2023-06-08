@@ -64,8 +64,15 @@
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Beheer">Beheer</a>
                                     </li>
                                 }
+                                else if (roles.Contains("Medewerker")) // Changed from 'else' to 'else if'
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Medewerker" asp-action="LeningenBeheer">LeningenBeheer</a>
+                                    </li>
+                                }
                             }
                         }
+
                     </ul>
                 </div>
             </div>

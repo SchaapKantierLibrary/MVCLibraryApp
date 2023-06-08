@@ -42,6 +42,30 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
+        public IActionResult LeningenBeheer()
+        {
+            var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
+            var ReservedItems = _context.Items.Where(item => item.Status == "Not Available").ToList();
+
+            // Here is where you fetch the loans
+            var loans = _context.Lenings.Include(l => l.Item)
+                                 .ThenInclude(i => i.Auteur)
+                                 .Include(l => l.Bezoeker)
+                                 .Where(l => l.Status == "Borrowed")  // Only include loans with status "Borrowed"
+                                 .ToList();
+
+            var reservations = _context.Reserveringen.ToList();
+            var users = _context.Users.ToList();
+
+
+            ViewBag.AvailableItems = availableItems;
+            ViewBag.ReservedItems = ReservedItems;
+            ViewBag.Loans = loans;
+            ViewBag.Reservations = reservations;
+            ViewBag.Users = users;
+
+            return View();
+        }
 
         [HttpPost]
         public IActionResult LendItem(int itemId)
@@ -76,7 +100,7 @@ namespace MVCLibraryApp.Controllers
             }
 
             // Redirect to the Dashboard view
-            return RedirectToAction("Dashboard");
+            return RedirectToAction("LeningenBeheer");
         }
 
         [HttpPost]
@@ -96,7 +120,7 @@ namespace MVCLibraryApp.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Dashboard");
+            return RedirectToAction("LeningenBeheer");
         }
 
         // Items en Authors aanmaken en bewerken
