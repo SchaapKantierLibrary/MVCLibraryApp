@@ -2,6 +2,10 @@
     ViewData["Title"] = "Dashboard";
 }
 
+    <p>
+           <a asp-area="" asp-controller="Beheerder" asp-action="Create">Maak een nieuwe gebruiker aan</a>
+                            </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -35,7 +39,3 @@
         }
     </tbody>
 </table>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>

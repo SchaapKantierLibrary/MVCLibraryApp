@@ -30,4 +30,43 @@ public class BeheerderController : Controller
 
         return View(users);
     }
+
+    [AllowAnonymous]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(RegisterModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = new BezoekerModel
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                Naam = model.Naam,
+                AbonnementID = 1
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                // Adding the user to the 'Bezoeker' role
+                await _userManager.AddToRoleAsync(user, "Bezoeker");
+                return RedirectToAction("Dashboard");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+        }
+
+        // If registration fails, return to the registration view with the model
+        return View(model);
+    }
 }
