@@ -48,15 +48,22 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Login">Login</a>
                             </li>
                         }
-                        @if (SignInManager.IsSignedIn(User))
+                        @if (User.Identity.IsAuthenticated)
                         {
                             var user = await UserManager.GetUserAsync(User);
-                            var roles = await UserManager.GetRolesAsync(user);
-                            if (roles.Contains("Bezoeker"))
+                            if (user == null)
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Beheer">Beheer</a>
-                                </li>
+                                await SignInManager.SignOutAsync();
+                            }
+                            else
+                            {
+                                var roles = await UserManager.GetRolesAsync(user);
+                                if (roles.Contains("Bezoeker"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Beheer">Beheer</a>
+                                    </li>
+                                }
                             }
                         }
                     </ul>
