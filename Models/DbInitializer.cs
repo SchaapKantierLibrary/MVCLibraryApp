@@ -156,7 +156,7 @@ public static class DbInitializer
                     Email = userName,
                     Naam = faker.Name.FullName(),
                     AbonnementID = 1
-                };
+            };
 
                 var result = await userManager.CreateAsync(user, password);
                 if (result.Succeeded)

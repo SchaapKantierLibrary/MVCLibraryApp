@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MVCLibraryApp.Models
 {
@@ -23,6 +24,7 @@ namespace MVCLibraryApp.Models
         [Required]
         public string Naam { get; set; }
 
+        [AllowNull]
         public string SelectedRole { get; set; }
     }
 }

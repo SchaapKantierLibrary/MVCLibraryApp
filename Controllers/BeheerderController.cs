@@ -61,7 +61,7 @@ public class BeheerderController : Controller
         if (ModelState.IsValid)
         {
             var user = new BezoekerModel
-            {
+            { 
                 UserName = model.Email,
                 Email = model.Email,
                 Naam = model.Naam,
@@ -89,4 +89,53 @@ public class BeheerderController : Controller
         ViewBag.Roles = GetRoles(); // Pass the available roles to the view
         return View(model);
     }
+
+    public async Task<IActionResult> Edit(string id)
+    {
+        var bezoeker = await _userManager.FindByIdAsync(id);
+        var userRoles = await _userManager.GetRolesAsync(bezoeker);
+
+        // Get all available roles
+        var roles = await _roleManager.Roles.ToListAsync();
+
+        // Create a SelectList with roles
+        var roleList = new SelectList(roles, "Name", "Name");
+
+        // Set the selected role for the user
+        ViewBag.Roles = roleList;
+        ViewBag.SelectedRole = userRoles.FirstOrDefault();
+
+        return View(bezoeker);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(BezoekerModel bezoeker, string selectedRole)
+    {
+        if (ModelState.IsValid)
+        {
+            // Update the user's properties
+            var result = await _userManager.UpdateAsync(bezoeker);
+            if (result.Succeeded)
+            {
+                // Retrieve the user's current roles
+                var userRoles = await _userManager.GetRolesAsync(bezoeker);
+
+                // Remove the user from all current roles
+                await _userManager.RemoveFromRolesAsync(bezoeker, userRoles);
+
+                // Add the user to the selected role
+                await _userManager.AddToRoleAsync(bezoeker, selectedRole);
+
+                return RedirectToAction("Dashboard");
+            }
+
+            // If the update fails, redisplay the form with the model
+            ModelState.AddModelError(string.Empty, "Failed to update the user.");
+        }
+
+        // If the model state is invalid, redisplay the form with the model
+        return View(bezoeker);
+    }
+
 }

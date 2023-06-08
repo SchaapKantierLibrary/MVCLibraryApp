@@ -7,7 +7,7 @@
     @Html.AntiForgeryToken()
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Naam)
+        @Html.LabelFor(model => model.Naam, "Name")
         @Html.TextBoxFor(model => model.Naam, new { @class = "form-control" })
     </div>
 
@@ -17,7 +17,7 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.SelectedRole)
+        @Html.LabelFor(model => model.SelectedRole, "Role")
         @Html.DropDownListFor(model => model.SelectedRole, ViewBag.Roles as SelectList, new { @class = "form-control" })
     </div>
 
@@ -31,6 +31,6 @@
         @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
     </div>
 
-    <input type="submit" value="Create" class="btn btn-primary" />
+    <input type="submit" value="Save user" class="btn btn-primary" />
 }
 

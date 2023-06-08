@@ -15,6 +15,7 @@ namespace MVCLibraryApp.Models
         public AbonnementModel Abonnement { get; set; }
 
 
+
         public ICollection<LeningModel> Lenings { get; set; }
         public ICollection<ReserveringModel> Reserverings { get; set; }
     }
