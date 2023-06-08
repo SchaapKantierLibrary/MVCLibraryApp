@@ -106,6 +106,7 @@ namespace MVCLibraryApp.Controllers
             return View();
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Dashboard(int locationId, string title, string authorSearch)
         {
@@ -266,6 +267,49 @@ namespace MVCLibraryApp.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [Authorize(Roles = "Bezoeker")]
+        public async Task<IActionResult> UserReservations()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var reservations = await _context.Reserveringen
+                .Where(r => r.BezoekerID == userId)
+                .Include(r => r.Item)  // assuming the relationship is properly defined
+                .ToListAsync();
+
+            return View(reservations);
+        }
+        [HttpPost]
+        [Authorize(Roles = "Bezoeker")]
+        public async Task<IActionResult> CancelReservation(int id)
+        {
+            var reservation = await _context.Reserveringen.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            if (reservation.BezoekerID != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return Unauthorized();
+            }
+
+            _context.Reserveringen.Remove(reservation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Beheer));
+        }
+
+        public async Task<IActionResult> Beheer()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var reservations = await _context.Reserveringen
+                .Where(r => r.BezoekerID == userId)
+                .Include(r => r.Item)
+                .ToListAsync();
+
+            return View(reservations);
+        }
     }
+
 }
 
