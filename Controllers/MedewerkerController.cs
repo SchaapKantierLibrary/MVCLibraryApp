@@ -131,29 +131,37 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public IActionResult EditItem(int id)
         {
-            var item = _context.Items.Find(id);
+            var item = _context.Items.FirstOrDefault(i => i.ID == id);
             if (item == null)
             {
                 return NotFound();
             }
-            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
+
             return View(item);
         }
 
         [HttpPost]
-        public IActionResult EditItem(ItemModel model)
+        public IActionResult EditItem(ItemModel itemModel)
         {
-            if (ModelState.IsValid)
+            var item = _context.Items.FirstOrDefault(i => i.ID == itemModel.ID);
+            if (item == null)
             {
-                _context.Items.Update(model);
-                _context.SaveChanges();
-
-                return RedirectToAction("ItemsList");
+                return NotFound();
             }
-            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
-            return View(model);
+
+            // Update properties
+            item.Titel = itemModel.Titel;
+            item.AuteurID = itemModel.AuteurID;
+            item.Publicatiejaar = itemModel.Publicatiejaar;
+            item.Status = itemModel.Status;
+            item.LocatieID = itemModel.LocatieID;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Dashboard");
         }
 
         public IActionResult CreateAuthor()
@@ -176,10 +184,10 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
-        public IActionResult EditAuthor(int authorId)
+        [HttpGet]
+        public IActionResult EditAuthor(int id)
         {
-            // Implementation for editing an existing author
-            var author = _context.Auteurs.FirstOrDefault(author => author.ID == authorId);
+            var author = _context.Auteurs.FirstOrDefault(a => a.ID == id);
             if (author == null)
             {
                 return NotFound();
@@ -189,28 +197,22 @@ namespace MVCLibraryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditAuthor(AuteurModel model)
+        public IActionResult EditAuthor(AuteurModel authorModel)
         {
-            // Logic for editing an existing author
-            if (ModelState.IsValid)
+            var author = _context.Auteurs.FirstOrDefault(a => a.ID == authorModel.ID);
+            if (author == null)
             {
-                var author = _context.Auteurs.FirstOrDefault(author => author.ID == model.ID);
-                if (author == null)
-                {
-                    return NotFound();
-                }
-
-                // Update the author properties
-                author.Name = model.Name;
-                // ... update other properties
-
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
+                return NotFound();
             }
 
-            return View(model);
-        }
+            // Update properties
+            author.Name = authorModel.Name;
+            author.Bio = authorModel.Bio;
 
+            _context.SaveChanges();
+
+            return RedirectToAction("Dashboard");
+        }
         // Alle leningen en reserveringen beheren
         public async Task<IActionResult> ManageLoansAndReservations()
         {
