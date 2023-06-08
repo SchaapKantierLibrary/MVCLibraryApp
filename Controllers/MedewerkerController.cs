@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MVCLibraryApp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,11 +21,29 @@ namespace MVCLibraryApp.Controllers
 
         public IActionResult Dashboard()
         {
+            var authors = _context.Auteurs.ToList();
+            var items = _context.Items.Include(i => i.Auteur).ToList();
+
+            ViewBag.Authors = authors;
+            ViewBag.Items = items;
+
+            return View();
+        }
+        public IActionResult LeningenBeheer()
+        {
             var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
             var ReservedItems = _context.Items.Where(item => item.Status == "Not Available").ToList();
-            var loans = _context.Lenings.ToList();
+
+            // Here is where you fetch the loans
+            var loans = _context.Lenings.Include(l => l.Item)
+                                 .ThenInclude(i => i.Auteur)
+                                 .Include(l => l.Bezoeker)
+                                 .Where(l => l.Status == "Borrowed")  // Only include loans with status "Borrowed"
+                                 .ToList();
+
             var reservations = _context.Reserveringen.ToList();
             var users = _context.Users.ToList();
+
 
             ViewBag.AvailableItems = availableItems;
             ViewBag.ReservedItems = ReservedItems;
@@ -68,19 +87,13 @@ namespace MVCLibraryApp.Controllers
             }
 
             // Redirect to the Dashboard view
-            return RedirectToAction("Dashboard");
-        }
-        public IActionResult ReturnItem()
-        {
-            // Implementation for returning an item
-            var borrowedItems = _context.Items.Where(item => item.Status == "Not Available").ToList();
-            return View(borrowedItems);
+            return RedirectToAction("LeningenBeheer");
         }
 
         [HttpPost]
         public IActionResult ReturnItem(int itemId)
         {
-            var lending = _context.Lenings.FirstOrDefault(l => l.ID == itemId);
+            var lending = _context.Lenings.Include(l => l.Item).FirstOrDefault(l => l.Item.ID == itemId);
             if (lending == null)
             {
                 return NotFound();
@@ -88,39 +101,40 @@ namespace MVCLibraryApp.Controllers
 
             lending.Status = "Returned";
             lending.Einddatum = DateTime.Now; // Set the end date as the current date
-                                              // Calculate any penalty costs if applicable
-                                              // ...
+            lending.Item.Status = "Available"; // Set the item status to Available
+                                               // Calculate any penalty costs if applicable
+                                               // ...
 
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(Dashboard));
+            return RedirectToAction("LeningenBeheer");
         }
 
         // Items en Authors aanmaken en bewerken
         public IActionResult CreateItem()
         {
-            // Implementation for creating a new item
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
             return View();
         }
 
         [HttpPost]
         public IActionResult CreateItem(ItemModel model)
         {
-            // Logic for creating a new item
             if (ModelState.IsValid)
             {
                 _context.Items.Add(model);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
-            }
 
+                return RedirectToAction("ItemsList");
+            }
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
             return View(model);
         }
 
-        public IActionResult EditItem(int itemId)
+        [HttpGet]
+        public IActionResult EditItem(int id)
         {
-            // Implementation for editing an existing item
-            var item = _context.Items.FirstOrDefault(item => item.ID == itemId);
+            var item = _context.Items.FirstOrDefault(i => i.ID == id);
             if (item == null)
             {
                 return NotFound();
@@ -130,28 +144,24 @@ namespace MVCLibraryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditItem(ItemModel model)
+        public IActionResult EditItem(ItemModel itemModel)
         {
-            // Logic for editing an existing item
-            if (ModelState.IsValid)
+            var item = _context.Items.FirstOrDefault(i => i.ID == itemModel.ID);
+            if (item == null)
             {
-                var item = _context.Items.FirstOrDefault(item => item.ID == model.ID);
-                if (item == null)
-                {
-                    return NotFound();
-                }
-
-                // Update the item properties
-                item.Titel = model.Titel;
-                item.Auteur = model.Auteur;
-                item.Locatie = model.Locatie;
-                // ... update other properties
-
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
+                return NotFound();
             }
 
-            return View(model);
+            // Update properties
+            item.Titel = itemModel.Titel;
+            item.AuteurID = itemModel.AuteurID;
+            item.Publicatiejaar = itemModel.Publicatiejaar;
+            item.Status = itemModel.Status;
+            item.LocatieID = itemModel.LocatieID;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Dashboard");
         }
 
         public IActionResult CreateAuthor()
@@ -174,10 +184,10 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
-        public IActionResult EditAuthor(int authorId)
+        [HttpGet]
+        public IActionResult EditAuthor(int id)
         {
-            // Implementation for editing an existing author
-            var author = _context.Auteurs.FirstOrDefault(author => author.ID == authorId);
+            var author = _context.Auteurs.FirstOrDefault(a => a.ID == id);
             if (author == null)
             {
                 return NotFound();
@@ -187,28 +197,22 @@ namespace MVCLibraryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditAuthor(AuteurModel model)
+        public IActionResult EditAuthor(AuteurModel authorModel)
         {
-            // Logic for editing an existing author
-            if (ModelState.IsValid)
+            var author = _context.Auteurs.FirstOrDefault(a => a.ID == authorModel.ID);
+            if (author == null)
             {
-                var author = _context.Auteurs.FirstOrDefault(author => author.ID == model.ID);
-                if (author == null)
-                {
-                    return NotFound();
-                }
-
-                // Update the author properties
-                author.Name = model.Name;
-                // ... update other properties
-
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
+                return NotFound();
             }
 
-            return View(model);
-        }
+            // Update properties
+            author.Name = authorModel.Name;
+            author.Bio = authorModel.Bio;
 
+            _context.SaveChanges();
+
+            return RedirectToAction("Dashboard");
+        }
         // Alle leningen en reserveringen beheren
         public async Task<IActionResult> ManageLoansAndReservations()
         {
