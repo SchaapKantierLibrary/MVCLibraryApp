@@ -5,9 +5,10 @@
     <table class="table">
         <thead>
             <tr>
-                <th class="col-3">ID</th>
-            <th class="col-2">Naam</th>
-            <th class="col-1">Lidmaatschapsstatus</th>
+                <th>Naam</th>
+                <th>Rol</th>
+                <th>Email</th>
+                <th>Lidmaatschapsstatus</th>
                 <th>Abonnement</th>
                 <th>Aanpassingen</th>
                 <th></th>
@@ -17,8 +18,13 @@
             @foreach (var bezoeker in ViewBag.Bezoekers)
             {
                 <tr>
-                    <td>@bezoeker.Id</td>
                     <td>@bezoeker.Naam</td>
+                    <td>
+                    @foreach(var rol in ViewBag.Rol[bezoeker.Id])
+                    {
+                        @rol
+                    }
+                </td>
                     <td>@bezoeker.Lidmaatschapsstatus</td>
                     <td>@bezoeker.UserName</td>
                 <td>@bezoeker.Email</td>
