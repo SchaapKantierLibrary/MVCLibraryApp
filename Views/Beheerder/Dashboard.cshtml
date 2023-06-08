@@ -2,40 +2,39 @@
     ViewData["Title"] = "Dashboard";
 }
 
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naam</th>
+            <th>Rol</th>
+            <th>Email</th>
+            <th>Lidmaatschapsstatus</th>
+            <th>Telefoonnummer</th>
+            <th>Aanpassingen</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bezoeker in ViewBag.Bezoekers)
+        {
             <tr>
-                <th>Naam</th>
-                <th>Rol</th>
-                <th>Email</th>
-                <th>Lidmaatschapsstatus</th>
-                <th>Abonnement</th>
-                <th>Aanpassingen</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var bezoeker in ViewBag.Bezoekers)
-            {
-                <tr>
-                    <td>@bezoeker.Naam</td>
-                    <td>
-                    @foreach(var rol in ViewBag.Rol[bezoeker.Id])
+                <td>@bezoeker.Naam</td>
+                <td>
+                    @foreach (var rol in ViewBag.Rol[bezoeker.Id])
                     {
                         @rol
                     }
                 </td>
-                    <td>@bezoeker.Lidmaatschapsstatus</td>
-                    <td>@bezoeker.UserName</td>
                 <td>@bezoeker.Email</td>
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = bezoeker.Id })
-                        @Html.ActionLink("Delete", "Delete", new { id = bezoeker.Id })
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                <td>@bezoeker.Lidmaatschapsstatus</td>
+                <td>@bezoeker.PhoneNumber </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = bezoeker.Id })
+                    @Html.ActionLink("Delete", "Delete", new { id = bezoeker.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <p>
     @Html.ActionLink("Create New", "Create")
