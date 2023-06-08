@@ -1,15 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
 
 [Authorize(Roles = "Beheerder")]
 public class BeheerderController : Controller
 {
-
-    private List<BezoekerModel> bezoekers = new List<BezoekerModel>();
-    public IActionResult Dashboard()
+    private UserManager<BezoekerModel> userManager;
+    public BeheerderController(UserManager<BezoekerModel> userManager)
     {
-        ViewBag.Bezoekers = bezoekers;
+        this.userManager = userManager;
+    }
+
+    public async Task<IActionResult> Dashboard()
+    {
+        ViewBag.Bezoekers = await userManager.Users.ToListAsync();
         return View();
     }
 }

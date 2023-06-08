@@ -2,27 +2,26 @@
     ViewData["Title"] = "Dashboard";
 }
 
-@{
-    List<BezoekerModel> bezoekers = ViewBag.Bezoekers;
-}
-@if (bezoekers != null && bezoekers.Count > 0)
-{
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
+                <th class="col-3">ID</th>
+            <th class="col-2">Naam</th>
+            <th class="col-1">Lidmaatschapsstatus</th>
+                <th>Abonnement</th>
+                <th>Aanpassingen</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var bezoeker in bezoekers)
+            @foreach (var bezoeker in ViewBag.Bezoekers)
             {
                 <tr>
                     <td>@bezoeker.Id</td>
                     <td>@bezoeker.Naam</td>
-                    <td>@bezoeker.Naam</td>
+                    <td>@bezoeker.Lidmaatschapsstatus</td>
+                    <td>@bezoeker.UserName</td>
+                <td>@bezoeker.Email</td>
                     <td>
                         @Html.ActionLink("Edit", "Edit", new { id = bezoeker.Id })
                         @Html.ActionLink("Delete", "Delete", new { id = bezoeker.Id })
@@ -31,11 +30,6 @@
             }
         </tbody>
     </table>
-}
-else
-{
-    <p>No bezoekers found.</p>
-}
 
 <p>
     @Html.ActionLink("Create New", "Create")
