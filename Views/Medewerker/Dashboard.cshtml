@@ -2,11 +2,38 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome, @ViewData["UserName"]!</h1>
-    <p>Email: @ViewData["Email"]</p>
-    <p>User ID: @ViewData["UserID"]</p>
-    <p>Membership Status: @ViewData["MembershipStatus"]</p>
+<h1>Lend Item</h1>
 
-    <p>You are a Medewerker</p>
-</div>
+@if (ViewBag.AvailableItems.Count > 0)
+{
+    <table>
+        <tr>
+            <th>Item ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <!-- Add more columns as needed -->
+            <th></th>
+        </tr>
+        @foreach (var item in ViewBag.ReservedItems)
+        {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.Titel</td>
+                <td>@item.Auteur</td>
+                <!-- Display more item properties -->
+                <td>
+                    <form method="post" asp-action="LendItem">
+                        <input type="hidden" name="itemId" value="@item.ID" />
+                        <button type="submit">Lend</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>No available items to lend.</p>
+}
+
+<!-- Add your additional content for lending an item -->
