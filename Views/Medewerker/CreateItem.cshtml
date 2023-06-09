@@ -1,55 +1,38 @@
-﻿@{
+﻿@model MVCLibraryApp.Models.ItemModel
+@using MVCLibraryApp.Models
+
+@{
     ViewData["Title"] = "Create Item";
 }
 
-@model MVCLibraryApp.Models.ItemModel
-
-<h2>Create Item</h2>
+<h2>Create New Item</h2>
 
 <form asp-controller="Medewerker" asp-action="CreateItem" method="post">
-    @Html.AntiForgeryToken()
-
     <div class="form-group">
-        <label asp-for="Titel"></label>
+        <label asp-for="Titel">Title</label>
         <input asp-for="Titel" class="form-control" />
-        <span asp-validation-for="Titel" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label asp-for="Auteur"></label>
-        <select asp-for="AuteurID" asp-items="ViewBag.Authors" class="form-control">
+        <label asp-for="AuteurID">Author</label>
+        <select asp-for="AuteurID" class="form-control" asp-items="ViewBag.AuteurID">
             <option value="">-- Select Author --</option>
         </select>
-        <span asp-validation-for="AuteurID" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label asp-for="Publicatiejaar"></label>
+        <label asp-for="Publicatiejaar">Publication Year</label>
         <input asp-for="Publicatiejaar" class="form-control" />
-        <span asp-validation-for="Publicatiejaar" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <label asp-for="LocatieID"></label>
-        <select asp-for="LocatieID" asp-items="ViewBag.Locations" class="form-control">
+        <label asp-for="LocatieID">Location</label>
+        <select asp-for="LocatieID" class="form-control" asp-items="ViewBag.LocatieID">
             <option value="">-- Select Location --</option>
         </select>
-        <span asp-validation-for="LocatieID" class="text-danger"></span>
     </div>
-
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">Create</button>
+        <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
 
 <div>
-    @if (ViewData["ValidationErrors"] != null)
-    {
-        <ul>
-            @foreach (var error in ViewData["ValidationErrors"] as List<string>)
-            {
-                <li>@error</li>
-            }
-        </ul>
-    }
+    <a asp-action="Index">Back to List</a>
 </div>
