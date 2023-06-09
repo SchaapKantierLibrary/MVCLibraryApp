@@ -183,23 +183,29 @@ namespace MVCLibraryApp.Controllers
 
         public IActionResult CreateAuthor()
         {
-            // Implementation for creating a new author
             return View();
         }
 
         [HttpPost]
-        public IActionResult CreateAuthor(AuteurModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAuthor(AuteurViewModel viewModel)
         {
-            // Logic for creating a new author
             if (ModelState.IsValid)
             {
-                _context.Auteurs.Add(model);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Dashboard));
+                var auteurModel = new AuteurModel
+                {
+                    Name = viewModel.Name,
+                    Bio = viewModel.Bio
+                };
+
+                _context.Add(auteurModel);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard", "Medewerker");
             }
 
-            return View(model);
+            return View(viewModel);
         }
+
 
         [HttpGet]
         public IActionResult EditAuthor(int id)
