@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MVCLibraryApp.Models;
+using MVCLibraryApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
@@ -113,23 +114,39 @@ namespace MVCLibraryApp.Controllers
         // Items en Authors aanmaken en bewerken
         public IActionResult CreateItem()
         {
-            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
+            ViewBag.AuteurID = new SelectList(_context.Auteurs, "ID", "ID");
+            ViewBag.LocatieID = new SelectList(_context.Locaties, "ID", "ID");
             return View();
         }
 
         [HttpPost]
-        public IActionResult CreateItem(ItemModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateItem(ItemViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Items.Add(model);
-                _context.SaveChanges();
+                // Map the properties from the view model to the entity model
+                var itemModel = new ItemModel
+                {
+                    Titel = viewModel.Titel,
+                    AuteurID = viewModel.AuteurID,
+                    Status = "Available",
+                    Publicatiejaar = viewModel.Publicatiejaar,
+                    LocatieID = viewModel.LocatieID
+                };
 
-                return RedirectToAction("ItemsList");
+                _context.Add(itemModel);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Dashboard", "Medewerker"); // Replace "YourControllerName" with the actual name of your controller
             }
-            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
-            return View(model);
+
+            ViewBag.AuteurID = new SelectList(_context.Auteurs, "ID", "ID", viewModel.AuteurID);
+            ViewBag.LocatieID = new SelectList(_context.Locaties, "ID", "ID", viewModel.LocatieID);
+
+            return View("Dashboard");
         }
+
 
         [HttpGet]
         public IActionResult EditItem(int id)
