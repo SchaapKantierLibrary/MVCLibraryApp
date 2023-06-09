@@ -4,17 +4,10 @@ namespace MVCLibraryApp.Models
 {
     public class ItemModel
     {
-        public ItemModel()
-        {
-            Status = "Available";
-            Lenings = new List<LeningModel>();
-            Reserverings = new List<ReserveringModel>();
-        }
-
         public int ID { get; set; }
         public string Titel { get; set; }
-        public int AuteurID { get; set; }
-       
+        public int AuteurID { get; set; } // with these...
+        public AuteurModel Auteur { get; set; }
         public int Publicatiejaar { get; set; }
         public string Status { get; set; }
 

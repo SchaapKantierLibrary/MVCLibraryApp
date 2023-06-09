@@ -121,33 +121,44 @@ namespace MVCLibraryApp.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateItem([Bind("ID,Titel,AuteurID,Publicatiejaar,Status,LocatieID,Lenings,Reserverings")] ItemModel item)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                _context.Items.Add(model);
+                _context.SaveChanges();
+
+                return RedirectToAction("ItemsList");
+            }
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
+            return View(model);
+            catch (Exception ex)
+            {
+                // Log exception here
+                Console.WriteLine(ex.Message);
             }
 
-            // Fetch the existing Auteur and Locatie entities
-            var auteur = await _context.Auteurs.FirstOrDefaultAsync(a => a.ID == item.AuteurID);
-            var locatie = await _context.Locaties.FirstOrDefaultAsync(l => l.ID == item.LocatieID);
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                          .Select(e => e.ErrorMessage)
+                                          .ToList();
 
-            if (auteur == null || locatie == null)
+            ViewData["ValidationErrors"] = errors;
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
+            ViewBag.Locations = new SelectList(_context.Locaties, "ID", "Beschrijving");
+            return View(model);
+            catch (Exception ex)
             {
-                return BadRequest("Invalid AuteurID or LocatieID.");
+                // Log exception here
+                Console.WriteLine(ex.Message);
             }
 
-            item.Auteur = auteur;
-            item.Locatie = locatie;
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                          .Select(e => e.ErrorMessage)
+                                          .ToList();
 
-            _context.Items.Add(item);
-
-            await _context.SaveChangesAsync();
-
-            return View("Dashboard");
+            ViewData["ValidationErrors"] = errors;
+            ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
+            ViewBag.Locations = new SelectList(_context.Locaties, "ID", "Beschrijving");
+            return View(model);
         }
-
-
-
-
 
         [HttpGet]
         public IActionResult EditItem(int id)
