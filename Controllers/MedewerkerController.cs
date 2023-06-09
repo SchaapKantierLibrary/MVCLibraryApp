@@ -120,16 +120,67 @@ namespace MVCLibraryApp.Controllers
         [HttpPost]
         public IActionResult CreateItem(ItemModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Items.Add(model);
-                _context.SaveChanges();
+                // Check if the provided IDs exist in the database
+                var authorExists = _context.Auteurs.Any(a => a.ID == model.AuteurID);
+                var locationExists = _context.Locaties.Any(l => l.ID == model.LocatieID);
 
-                return RedirectToAction("ItemsList");
+                if (!authorExists || !locationExists)
+                {
+                    throw new Exception("Author or location not found.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    foreach (var modelStateKey in ModelState.Keys)
+                    {
+                        var modelStateVal = ModelState[modelStateKey];
+                        foreach (var error in modelStateVal.Errors)
+                        {
+                            Console.WriteLine($"Key: {modelStateKey}, Error: {error.ErrorMessage}");
+                        }
+                    }
+                }
+                // Load the Auteur based on the provided ID
+                model.Auteur = _context.Auteurs.FirstOrDefault(a => a.ID == model.AuteurID);
+
+                // Load the Locatie based on the provided ID
+                model.Locatie = _context.Locaties.FirstOrDefault(l => l.ID == model.LocatieID);
+
+                // Validate the model here
+                if (model.Auteur != null && model.Locatie != null && ModelState.IsValid)
+                {
+                    {
+                        model.Status = "Available"; // Set status to Available
+
+                        _context.Items.Add(model);
+                        _context.SaveChanges();
+
+                        // Change the redirect action to 'Dashboard'
+                        return RedirectToAction("Dashboard");
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                // Log exception here
+                Console.WriteLine(ex.Message);
+            }
+
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                          .Select(e => e.ErrorMessage)
+                                          .ToList();
+
+            ViewData["ValidationErrors"] = errors;
             ViewBag.Authors = new SelectList(_context.Auteurs, "ID", "Name");
+            ViewBag.Locations = new SelectList(_context.Locaties, "ID", "Beschrijving");
             return View(model);
         }
+
+
+
+
 
         [HttpGet]
         public IActionResult EditItem(int id)
