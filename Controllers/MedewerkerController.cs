@@ -20,7 +20,12 @@ namespace MVCLibraryApp.Controllers
             _context = context;
         }
 
+
         public IActionResult Dashboard()
+        {
+            return View();
+        }
+        public IActionResult ItemsAndAuthors()
         {
             var authors = _context.Auteurs.ToList();
             var items = _context.Items.Include(i => i.Auteur).ToList();
@@ -138,13 +143,13 @@ namespace MVCLibraryApp.Controllers
                 _context.Add(itemModel);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Dashboard", "Medewerker"); // Replace "YourControllerName" with the actual name of your controller
+                return RedirectToAction("ÏtemsAndAuthors", "Medewerker"); // Replace "YourControllerName" with the actual name of your controller
             }
 
             ViewBag.AuteurID = new SelectList(_context.Auteurs, "ID", "ID", viewModel.AuteurID);
             ViewBag.LocatieID = new SelectList(_context.Locaties, "ID", "ID", viewModel.LocatieID);
 
-            return View("Dashboard");
+            return View("ItemsAndAuthors");
         }
 
 
@@ -178,7 +183,7 @@ namespace MVCLibraryApp.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Dashboard");
+            return RedirectToAction("ItemsAndAuthors");
         }
 
         public IActionResult CreateAuthor()
@@ -200,7 +205,7 @@ namespace MVCLibraryApp.Controllers
 
                 _context.Add(auteurModel);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Dashboard", "Medewerker");
+                return RedirectToAction("ItemsAndAuthors", "Medewerker");
             }
 
             return View(viewModel);
@@ -234,7 +239,7 @@ namespace MVCLibraryApp.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Dashboard");
+            return RedirectToAction("ItemsAndAuthors");
         }
         // Alle leningen en reserveringen beheren
         public async Task<IActionResult> ManageLoansAndReservations()
