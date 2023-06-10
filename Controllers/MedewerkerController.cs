@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 
+
 namespace MVCLibraryApp.Controllers
 {
     [Authorize(Roles = "Medewerker")]
@@ -49,6 +50,57 @@ namespace MVCLibraryApp.Controllers
 
             return View(users);
         }
+
+        public IActionResult CreateBezoeker()
+        {
+            // This should actually come from your database.
+            var abonnementenList = _context.Abonnementen.ToList();
+            ViewBag.Abonnementen = new SelectList(abonnementenList, "Id", "Type");
+
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBezoeker(BezoekerViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var abonnement = _context.Abonnementen.Find(model.AbonnementID);
+                if (abonnement != null)
+                {
+                    var user = new BezoekerModel
+                    {
+                        UserName = model.Email,
+                        Email = model.Email,
+                        Naam = model.Name,
+                        Lidmaatschapsstatus = abonnement.Type,
+                        AbonnementID = model.AbonnementID,
+                    };
+
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Bezoeker");
+                        return RedirectToAction(nameof(IndexBezoeker));
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid Abonnement ID.");
+                }
+            }
+            // If we got this far, something failed, so redisplay form
+            var abonnementenList = _context.Abonnementen.ToList();
+            ViewBag.Abonnementen = new SelectList(abonnementenList, "Id", "Type");
+            return View(model);
+        }
+
 
 
         [HttpPost]
@@ -350,16 +402,7 @@ namespace MVCLibraryApp.Controllers
             return View();
         }
 
-        // Volledige CRUD op Users met het type/level/rechten van Bezoeker
-        public async Task<IActionResult> ManageUsers()
-        {
-            var users = await _context.Users.ToListAsync();
-
-            // Pass the users data to the view
-            ViewBag.Users = users;
-
-            return View();
-        }
+      
 
         // Openstaande posten (facturen/openstaand bedrag) inzien
         public IActionResult ViewOutstandingInvoices()
