@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace MVCLibraryApp.Controllers
@@ -14,10 +15,13 @@ namespace MVCLibraryApp.Controllers
     public class MedewerkerController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BezoekerModel> _userManager;
 
-        public MedewerkerController(ApplicationDbContext context)
+
+        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
 
@@ -25,16 +29,23 @@ namespace MVCLibraryApp.Controllers
         {
             return View();
         }
-        public IActionResult ItemsAndAuthors()
+        public async Task<IActionResult> IndexBezoeker()
         {
-            var authors = _context.Auteurs.ToList();
-            var items = _context.Items.Include(i => i.Auteur).ToList();
+            var users = await _userManager.GetUsersInRoleAsync("Bezoeker");
+            var usersWithRoles = new List<(BezoekerModel, IList<string>)>();
 
-            ViewBag.Authors = authors;
-            ViewBag.Items = items;
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                usersWithRoles.Add((user, roles));
+            }
 
-            return View();
+            ViewBag.Bezoekers = users;
+            ViewBag.Rol = usersWithRoles.ToDictionary(x => x.Item1.Id, x => x.Item2);
+
+            return View(users);
         }
+
         public IActionResult LeningenBeheer()
         {
             var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
