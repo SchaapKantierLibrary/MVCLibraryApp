@@ -33,18 +33,47 @@ namespace MVCLibraryApp.Controllers
         {
             var users = await _userManager.GetUsersInRoleAsync("Bezoeker");
             var usersWithRoles = new List<(BezoekerModel, IList<string>)>();
+            var userLockoutStatus = new Dictionary<string, bool>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 usersWithRoles.Add((user, roles));
+                var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
+                userLockoutStatus.Add(user.Id, lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now);
             }
 
             ViewBag.Bezoekers = users;
             ViewBag.Rol = usersWithRoles.ToDictionary(x => x.Item1.Id, x => x.Item2);
+            ViewBag.LockoutStatus = userLockoutStatus;
 
             return View(users);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleBlockUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user != null)
+            {
+                var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
+                if (lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now)  // if user is blocked
+                {
+                    await _userManager.SetLockoutEndDateAsync(user, null);  // unblock the user
+                }
+                else
+                {
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);  // block the user
+                }
+
+                return RedirectToAction("IndexBezoeker");
+            }
+
+            return NotFound();
+        }
+
 
         public IActionResult LeningenBeheer()
         {

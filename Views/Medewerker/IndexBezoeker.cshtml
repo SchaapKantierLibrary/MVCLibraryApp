@@ -34,7 +34,24 @@
                 <td>
                     <a asp-controller="Medewerker" asp-action="Edit" asp-route-id="@bezoeker.Id">Edit</a> |
                     <a asp-controller="Medewerker" asp-action="Delete" asp-route-id="@bezoeker.Id">Delete</a>
+                
                 </td>
+                <td>
+                    <form asp-controller="Medewerker" asp-action="ToggleBlockUser" method="post">
+                        <input type="hidden" name="id" value="@bezoeker.Id" />
+                        <button type="submit">
+                            @if (ViewBag.LockoutStatus[bezoeker.Id])
+                            {
+                                <span>Unblock</span>
+                            }
+                            else
+                            {
+                                <span>Block</span>
+                            }
+                        </button>
+                    </form>
+                </td>
+
             </tr>
         }
     </tbody>
