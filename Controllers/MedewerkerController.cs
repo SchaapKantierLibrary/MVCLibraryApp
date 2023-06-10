@@ -60,6 +60,33 @@ namespace MVCLibraryApp.Controllers
             return View();
         }
 
+        // GET: ItemModels
+        public async Task<IActionResult> IndexItem()
+        {
+            var applicationDbContext = _context.Items.Include(i => i.Auteur).Include(i => i.Locatie);
+            return View(await applicationDbContext.ToListAsync());
+        }
+
+        // GET: ItemModels/Details/5
+        public async Task<IActionResult> DetailsItem(int? id)
+        {
+            if (id == null || _context.Items == null)
+            {
+                return NotFound();
+            }
+
+            var itemModel = await _context.Items
+                .Include(i => i.Auteur)
+                .Include(i => i.Locatie)
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (itemModel == null)
+            {
+                return NotFound();
+            }
+
+            return View(itemModel);
+        }
+
         [HttpPost]
         public IActionResult LendItem(int itemId)
         {
@@ -143,13 +170,13 @@ namespace MVCLibraryApp.Controllers
                 _context.Add(itemModel);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("ÏtemsAndAuthors", "Medewerker"); // Replace "YourControllerName" with the actual name of your controller
+                return RedirectToAction("IndexItem", "Medewerker"); // Replace "YourControllerName" with the actual name of your controller
             }
 
             ViewBag.AuteurID = new SelectList(_context.Auteurs, "ID", "ID", viewModel.AuteurID);
             ViewBag.LocatieID = new SelectList(_context.Locaties, "ID", "ID", viewModel.LocatieID);
 
-            return View("ItemsAndAuthors");
+            return View("IndexItem");
         }
 
 
@@ -183,13 +210,42 @@ namespace MVCLibraryApp.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("ItemsAndAuthors");
+            return RedirectToAction("IndexItem");
         }
+
+        // GET: AuteurModels
+        public async Task<IActionResult> IndexAuthor()
+        {
+            return _context.Auteurs != null ?
+                        View(await _context.Auteurs.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.Auteurs'  is null.");
+        }
+
+        // GET: AuteurModels/Details/5
+        public async Task<IActionResult> DetailsAuthor(int? id)
+        {
+            if (id == null || _context.Auteurs == null)
+            {
+                return NotFound();
+            }
+
+            var auteurModel = await _context.Auteurs
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (auteurModel == null)
+            {
+                return NotFound();
+            }
+
+            return View(auteurModel);
+        }
+
 
         public IActionResult CreateAuthor()
         {
             return View();
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -205,7 +261,7 @@ namespace MVCLibraryApp.Controllers
 
                 _context.Add(auteurModel);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("ItemsAndAuthors", "Medewerker");
+                return RedirectToAction("IndexAuthor", "Medewerker");
             }
 
             return View(viewModel);

@@ -2,83 +2,25 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<style>
+    .fancy-font {
+        font-family: 'Brush Script MT', cursive; /* Replace with your preferred font */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        width: 45%; /* The buttons will take up 45% of the width of their container. */
+        margin: 2.5%; /* Spacing around the buttons */
+    }
+</style>
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">Dashboard</h1>
 
     <div class="text-center mt-4">
-        <a class="btn btn-primary" asp-action="CreateItem" asp-controller="Medewerker">Create Item</a>
-        <a class="btn btn-primary" asp-action="CreateAuthor" asp-controller="Medewerker">Create Author</a>
-    </div>
-
-    <div class="row">
-        <!-- Authors List -->
-        <div class="col-md-6">
-            <h3>Authors</h3>
-            @if (ViewBag.Authors != null && ViewBag.Authors.Count > 0)
-            {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Bio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var author in ViewBag.Authors)
-                        {
-                            <tr>
-                                <td>@author.ID</td>
-                                <td>@author.Name</td>
-                                <td>@author.Bio</td>
-                                <td><a asp-action="EditAuthor" asp-route-id="@author.ID">Edit</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p>No authors found.</p>
-            }
-        </div>
-
-        <!-- Items List -->
-        <div class="col-md-6">
-            <h3>Items</h3>
-            @if (ViewBag.Items != null && ViewBag.Items.Count > 0)
-            {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Author ID</th>
-                            <th>Publication Year</th>
-                            <th>Status</th>
-                            <th>Location ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in ViewBag.Items)
-                        {
-                            <tr>
-                                <td>@item.ID</td>
-                                <td>@item.Titel</td>
-                                <td>@item.AuteurID</td>
-                                <td>@item.Publicatiejaar</td>
-                                <td>@item.Status</td>
-                                <td>@item.LocatieID</td>
-                                <td><a asp-action="EditItem" asp-route-id="@item.ID">Edit</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p>No items found.</p>
-            }
-        </div>
+        <!-- Stylished Buttons to Other Views -->
+        <a class="btn btn-primary btn-lg fancy-font" asp-action="IndexItem" asp-controller="Medewerker">Index Item</a>
+        <a class="btn btn-primary btn-lg fancy-font" asp-action="IndexAuthor" asp-controller="Medewerker">Index Auteur</a>
+        <a class="btn btn-success btn-lg fancy-font" asp-action="LeningenBeheer" asp-controller="Medewerker">Leningen Beheer</a>
+        <a class="btn btn-warning btn-lg fancy-font" asp-action="ItemsAndAuthors" asp-controller="Medewerker">Items and Authors</a>
     </div>
 </div>
