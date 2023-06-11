@@ -127,6 +127,91 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditBezoeker(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var abonnementenList = _context.Abonnementen.ToList();
+            ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type");
+
+            var model = new BezoekerViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Naam = user.Naam,
+                AbonnementID = user.AbonnementID
+            };
+
+            Console.WriteLine("EditBezoeker - User found: " + user.Email); // Debugging statement
+            Console.WriteLine("EditBezoeker - Abonnementen count: " + abonnementenList.Count); // Debugging statement
+
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBezoeker(BezoekerViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var user = await _userManager.FindByIdAsync(model.Id);
+                    if (user == null)
+                    {
+                        return NotFound();
+                    }
+
+                    user.Email = model.Email;
+                    user.Naam = model.Naam;
+                    user.AbonnementID = model.AbonnementID;
+
+                    var result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction(nameof(IndexBezoeker));
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exception as needed
+                Console.WriteLine(ex.Message);
+            }
+
+            // If we got this far, something failed, so redisplay form
+            try
+            {
+                var abonnementenList = _context.Abonnementen.ToList();
+                ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type");
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exception as needed
+                Console.WriteLine(ex.Message);
+            }
+
+            return View(model);
+        }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> ToggleBlockUser(string id)
@@ -414,56 +499,7 @@ namespace MVCLibraryApp.Controllers
 
             return RedirectToAction("ItemsAndAuthors");
         }
-        // Alle leningen en reserveringen beheren
-        public async Task<IActionResult> ManageLoansAndReservations()
-        {
-            var loans = await _context.Lenings.ToListAsync();
-            var reservations = await _context.Reserveringen.ToListAsync();
-
-            // Pass the loans and reservations data to the view
-            ViewBag.Loans = loans;
-            ViewBag.Reservations = reservations;
-
-            return View();
-        }
-
-      
-
-        // Openstaande posten (facturen/openstaand bedrag) inzien
-        public IActionResult ViewOutstandingInvoices()
-        {
-            // Implementation for viewing outstanding invoices
-            return View();
-        }
-
-        // Betalingen verwerken
-        public IActionResult ProcessPayments()
-        {
-            // Implementation for processing payments
-            return View();
-        }
-
-        // Bezoeker accounts blokkeren
-        public IActionResult BlockVisitorAccount()
-        {
-            // Implementation for blocking a visitor account
-            return View();
-        }
-
-        // Locaties aan de Items toekennen
-        public IActionResult AssignLocationsToItems()
-        {
-            // Implementation for assigning locations to items
-            return View();
-        }
-
-        // Kan abonnementen toevoegen en annuleren
-        public IActionResult AddSubscription()
-        {
-            // Implementation for adding a subscription
-            return View();
-        }
-
+       
         [HttpPost]
         public IActionResult AddSubscription(ReserveringModel model)
         {
