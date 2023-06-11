@@ -273,6 +273,8 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
+
+
         [HttpPost]
         public IActionResult LendItem(int itemId)
         {
@@ -335,6 +337,12 @@ namespace MVCLibraryApp.Controllers
         {
             var applicationDbContext = _context.Items.Include(i => i.Auteur).Include(i => i.Locatie);
             return View(await applicationDbContext.ToListAsync());
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmPayment()
+        {
+            return View();
         }
 
         public async Task<IActionResult> DetailsItem(int? id)

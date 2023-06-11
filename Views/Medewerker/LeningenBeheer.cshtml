@@ -23,7 +23,7 @@
                 <!-- Display more item properties -->
                 <td>
                     <form method="post" asp-action="LendItem">
-                        <input type="hidden" name="itemId" value="@item.ID" />
+                        <input type="hidden" name="itemId" value="@item.Item.ID" />
                         <button type="submit">Lend</button>
                     </form>
                 </td>

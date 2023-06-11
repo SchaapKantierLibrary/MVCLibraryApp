@@ -1,10 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using Bogus;
+using System.Collections.Generic;
 
 namespace MVCLibraryApp.Models
 {
     public class ApplicationDbContext : IdentityDbContext<BezoekerModel>
     {
+        // Constructor accepting DbContextOptions<ApplicationDbContext>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -59,6 +65,94 @@ namespace MVCLibraryApp.Models
                 .HasOne(i => i.Auteur)
                 .WithMany(a => a.Items)
                 .HasForeignKey(i => i.AuteurID);
+
+
+            modelBuilder.Entity<AbonnementModel>()
+       .Property(a => a.Abonnementskosten)
+       .HasPrecision(10, 2); // Precision: 10, Scale: 2
+
+            modelBuilder.Entity<AbonnementModel>()
+                .Property(a => a.Boetekosten)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<AbonnementModel>()
+                .Property(a => a.Reserveringskosten)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<FactuurModel>()
+                .Property(f => f.Amount)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<GeldbankModel>()
+                .Property(g => g.TotalEarnings)
+                .HasPrecision(10, 2);
+
+            SeedAbonnementen(modelBuilder);
+            SeedLocations(modelBuilder);
+            SeedAuteurs(modelBuilder);
+            SeedItems(modelBuilder);
         }
+
+        private void SeedAbonnementen(ModelBuilder builder)
+        {
+            var abonnementen = new[]
+            {
+        new AbonnementModel { ID = -1, Type = "Free", MaximaleItems = 1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.00M, Boetekosten = 0.00M, Abonnementskosten = 0.00M },
+        new AbonnementModel { ID = -2, Type = "Jeugd", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.00M, Abonnementskosten = 5.00M },
+        new AbonnementModel { ID = -3, Type = "Budget", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 1, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 10.00M },
+        new AbonnementModel { ID = -4, Type = "Basis", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 15.00M }
+    };
+
+            builder.Entity<AbonnementModel>().HasData(abonnementen);
+        }
+
+
+        private void SeedLocations(ModelBuilder builder)
+        {
+            var locaties = new[]
+            {
+        new LocatieModel { ID = 1, Beschrijving = "Noord" },
+        new LocatieModel { ID = 2, Beschrijving = "Oost" },
+        new LocatieModel { ID = 3, Beschrijving = "West" },
+        new LocatieModel { ID = 4, Beschrijving = "Zuid" }
+    };
+
+            builder.Entity<LocatieModel>().HasData(locaties);
+        }
+
+        private void SeedAuteurs(ModelBuilder builder)
+        {
+            var faker = new Bogus.Faker();
+
+            var auteurs = Enumerable.Range(1, 100).Select(index => new AuteurModel
+            {
+                ID = index,
+                Name = faker.Name.FullName(),
+                Bio = faker.Lorem.Paragraph()
+            }).ToArray();
+
+            builder.Entity<AuteurModel>().HasData(auteurs);
+        }
+
+
+        private void SeedItems(ModelBuilder builder)
+        {
+            var faker = new Bogus.Faker();
+
+            var items = Enumerable.Range(1, 100).Select(index => new ItemModel
+            {
+                ID = index,
+                Titel = faker.Lorem.Sentence(3),
+                AuteurID = faker.Random.Int(1, 100),
+                Publicatiejaar = faker.Random.Int(1980, 2023),
+                Status = "Available",
+                LocatieID = faker.Random.Int(1, 4) // Assign a random location ID between 1 and 4
+            }).ToArray();
+
+            builder.Entity<ItemModel>().HasData(items);
+        }
+
+
+
     }
 }

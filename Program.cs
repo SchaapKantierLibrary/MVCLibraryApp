@@ -79,19 +79,10 @@ namespace MVCLibraryApp
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
 
-            var context = services.GetRequiredService<ApplicationDbContext>();
-            var userManager = services.GetRequiredService<UserManager<BezoekerModel>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+         
 
-            await DbInitializer.Initialize(context, userManager, roleManager);
 
             app.Run();
         }
-
-        private static async Task SeedDataAsync(UserManager<BezoekerModel> userManager, RoleManager<IdentityRole> roleManager)
-        {
-            await DbInitializer.SeedUsersAndRoles(userManager, roleManager);
-        }
-
     }
 }

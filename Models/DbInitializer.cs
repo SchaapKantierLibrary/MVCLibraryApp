@@ -167,6 +167,7 @@ public static class DbInitializer
                 }
             }
         }
+
         // Seed admin user
         var adminUser = new BezoekerModel
         {
