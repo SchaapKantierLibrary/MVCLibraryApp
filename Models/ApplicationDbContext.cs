@@ -18,6 +18,8 @@ namespace MVCLibraryApp.Models
         public DbSet<AbonnementModel> Abonnementen { get; set; }
         public DbSet<LeningModel> Lenings { get; set; }
         public DbSet<ReserveringModel> Reserveringen { get; set; }
+        public DbSet<GeldbankModel> Geldbank { get; set; }
+        public DbSet<FactuurModel> Facturen { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -152,6 +152,51 @@ namespace MVCLibraryApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MVCLibraryApp.Models.FactuurModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Facturen");
+                });
+
+            modelBuilder.Entity("MVCLibraryApp.Models.GeldbankModel", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<decimal>("TotalEarnings")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Geldbank");
+                });
+
             modelBuilder.Entity("MVCLibraryApp.Models.ItemModel", b =>
                 {
                     b.Property<int>("ID")
@@ -448,6 +493,17 @@ namespace MVCLibraryApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Abonnement");
+                });
+
+            modelBuilder.Entity("MVCLibraryApp.Models.FactuurModel", b =>
+                {
+                    b.HasOne("MVCLibraryApp.Models.BezoekerModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MVCLibraryApp.Models.ItemModel", b =>
