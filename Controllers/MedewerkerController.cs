@@ -44,12 +44,17 @@ namespace MVCLibraryApp.Controllers
                 userLockoutStatus.Add(user.Id, lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now);
             }
 
+            // Eagerly load the Abonnement property for each user
+            await _context.Bezoekers.Include(b => b.Abonnement).LoadAsync();
+
             ViewBag.Bezoekers = users;
             ViewBag.Rol = usersWithRoles.ToDictionary(x => x.Item1.Id, x => x.Item2);
             ViewBag.LockoutStatus = userLockoutStatus;
 
             return View(users);
         }
+
+
 
         public IActionResult CreateBezoeker()
         {
@@ -210,31 +215,39 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
-
-
-
         [HttpPost]
-        public async Task<IActionResult> ToggleBlockUser(string id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBezoeker(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-
-            if (user != null)
+            if (string.IsNullOrEmpty(id))
             {
-                var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
-                if (lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now)  // if user is blocked
-                {
-                    await _userManager.SetLockoutEndDateAsync(user, null);  // unblock the user
-                }
-                else
-                {
-                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);  // block the user
-                }
-
-                return RedirectToAction("IndexBezoeker");
+                return NotFound();
             }
 
-            return NotFound();
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(IndexBezoeker));
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            // If we got this far, something failed, so redisplay form
+            // Replace 'YourView' with the name of the view you want to display in case of an error
+            return View("IndexBezoeker");
         }
+
 
 
         public IActionResult LeningenBeheer()
