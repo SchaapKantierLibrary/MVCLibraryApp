@@ -46,16 +46,17 @@ public static class DbInitializer
         {
             var abonnementen = new[]
             {
-                new AbonnementModel { Type = "Free", MaximaleItems = 1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.00, Boetekosten = 0.00, Abonnementskosten = 0.00 },
-                new AbonnementModel { Type = "Jeugd", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25, Boetekosten = 0.00, Abonnementskosten = 5.00 },
-                new AbonnementModel { Type = "Budget", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 1, Reserveringskosten = 0.25, Boetekosten = 0.30, Abonnementskosten = 10.00 },
-                new AbonnementModel { Type = "Basis", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25, Boetekosten = 0.30, Abonnementskosten = 15.00 }
-            };
+            new AbonnementModel { Type = "Free", MaximaleItems = 1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.00M, Boetekosten = 0.00M, Abonnementskosten = 0.00M },
+            new AbonnementModel { Type = "Jeugd", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.00M, Abonnementskosten = 5.00M },
+            new AbonnementModel { Type = "Budget", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 1, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 10.00M },
+            new AbonnementModel { Type = "Basis", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 15.00M }
+        };
 
             context.Abonnementen.AddRange(abonnementen);
             context.SaveChanges();
         }
     }
+
 
     private static void SeedLocations(ApplicationDbContext context)
     {

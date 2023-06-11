@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace MVCLibraryApp.Models
 {
     public class ApplicationDbContext : IdentityDbContext<BezoekerModel>

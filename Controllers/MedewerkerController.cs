@@ -248,8 +248,7 @@ namespace MVCLibraryApp.Controllers
             return View("IndexBezoeker");
         }
 
-
-
+      
         public IActionResult LeningenBeheer()
         {
             var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
@@ -274,34 +273,6 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
-
-        // GET: ItemModels
-        public async Task<IActionResult> IndexItem()
-        {
-            var applicationDbContext = _context.Items.Include(i => i.Auteur).Include(i => i.Locatie);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
-        // GET: ItemModels/Details/5
-        public async Task<IActionResult> DetailsItem(int? id)
-        {
-            if (id == null || _context.Items == null)
-            {
-                return NotFound();
-            }
-
-            var itemModel = await _context.Items
-                .Include(i => i.Auteur)
-                .Include(i => i.Locatie)
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (itemModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(itemModel);
-        }
-
         [HttpPost]
         public IActionResult LendItem(int itemId)
         {
@@ -357,6 +328,33 @@ namespace MVCLibraryApp.Controllers
 
             return RedirectToAction("LeningenBeheer");
         }
+
+        // GET: ItemModels
+        public async Task<IActionResult> IndexItem()
+        {
+            var applicationDbContext = _context.Items.Include(i => i.Auteur).Include(i => i.Locatie);
+            return View(await applicationDbContext.ToListAsync());
+        }
+
+        public async Task<IActionResult> DetailsItem(int? id)
+        {
+            if (id == null || _context.Items == null)
+            {
+                return NotFound();
+            }
+
+            var itemModel = await _context.Items
+                .Include(i => i.Auteur)
+                .Include(i => i.Locatie)
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (itemModel == null)
+            {
+                return NotFound();
+            }
+
+            return View(itemModel);
+        }
+
 
         // Items en Authors aanmaken en bewerken
         public IActionResult CreateItem()

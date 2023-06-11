@@ -7,9 +7,9 @@
         public int MaximaleItems { get; set; }
         public int Uitleentermijn { get; set; }
         public int Verlengingen { get; set; }
-        public double Reserveringskosten { get; set; }
-        public double Boetekosten { get; set; }
-        public double Abonnementskosten { get; set; }
+        public decimal Reserveringskosten { get; set; }
+        public decimal Boetekosten { get; set; }
+        public decimal Abonnementskosten { get; set; }
 
         public ICollection<BezoekerModel> Bezoekers { get; set; }
     }
