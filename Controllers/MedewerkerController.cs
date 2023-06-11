@@ -53,9 +53,17 @@ namespace MVCLibraryApp.Controllers
 
         public IActionResult CreateBezoeker()
         {
-            // This should actually come from your database.
-            var abonnementenList = _context.Abonnementen.ToList();
-            ViewBag.Abonnementen = new SelectList(abonnementenList, "Id", "Type");
+            try
+            {
+                // This should actually come from your database.
+                var abonnementenList = _context.Abonnementen.ToList();
+                ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type"); // Notice ID (not Id)
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exception as needed
+                Console.WriteLine(ex.Message);
+            }
 
             return View();
         }
@@ -65,42 +73,59 @@ namespace MVCLibraryApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBezoeker(BezoekerViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var abonnement = _context.Abonnementen.Find(model.AbonnementID);
-                if (abonnement != null)
+                if (ModelState.IsValid)
                 {
-                    var user = new BezoekerModel
+                    var abonnement = _context.Abonnementen.Find(model.AbonnementID);
+                    if (abonnement != null)
                     {
-                        UserName = model.Email,
-                        Email = model.Email,
-                        Naam = model.Name,
-                        Lidmaatschapsstatus = abonnement.Type,
-                        AbonnementID = model.AbonnementID,
-                    };
+                        var user = new BezoekerModel
+                        {
+                            UserName = model.Email,
+                            Email = model.Email,
+                            Naam = model.Naam,
+                            AbonnementID = model.AbonnementID,
+                        };
 
-                    var result = await _userManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
-                    {
-                        await _userManager.AddToRoleAsync(user, "Bezoeker");
-                        return RedirectToAction(nameof(IndexBezoeker));
+                        var result = await _userManager.CreateAsync(user, model.Password);
+                        if (result.Succeeded)
+                        {
+                            await _userManager.AddToRoleAsync(user, "Bezoeker");
+                            await _context.SaveChangesAsync();
+                            return RedirectToAction(nameof(IndexBezoeker));
+                        }
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
                     }
-                    foreach (var error in result.Errors)
+                    else
                     {
-                        ModelState.AddModelError("", error.Description);
+                        ModelState.AddModelError("", "Invalid Abonnement ID.");
                     }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Invalid Abonnement ID.");
                 }
             }
+            catch (Exception ex)
+            {
+                // Log or handle exception as needed
+                Console.WriteLine(ex.Message);
+            }
+
             // If we got this far, something failed, so redisplay form
-            var abonnementenList = _context.Abonnementen.ToList();
-            ViewBag.Abonnementen = new SelectList(abonnementenList, "Id", "Type");
+            try
+            {
+                var abonnementenList = _context.Abonnementen.ToList();
+                ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type");
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exception as needed
+                Console.WriteLine(ex.Message);
+            }
+
             return View(model);
         }
-
 
 
         [HttpPost]

@@ -9,7 +9,6 @@ namespace MVCLibraryApp.Models
 
         // Your existing properties
         public string Naam { get; set; }
-        public string Lidmaatschapsstatus { get; set; } = "Free"; // Set a default value for Lidmaatschapsstatus
 
         public int AbonnementID { get; set; }
         public AbonnementModel Abonnement { get; set; }
