@@ -321,12 +321,13 @@ namespace MVCLibraryApp.Controllers
             lending.Status = "Returned";
             lending.Einddatum = DateTime.Now; // Set the end date as the current date
             lending.Item.Status = "Available"; // Set the item status to Available
-                                               // Calculate any penalty costs if applicable
-                                               // ...
 
-            _context.SaveChanges();
+            var user = _context.Users.Find(lending.BezoekerID);
 
-            return RedirectToAction("LeningenBeheer");
+            // Call our new method
+            CalculateFineAndGenerateInvoice(lending, user);
+
+            return RedirectToAction("ConfirmPayment", "Medewerker");
         }
 
         // GET: ItemModels
@@ -555,5 +556,45 @@ namespace MVCLibraryApp.Controllers
 
             return RedirectToAction(nameof(Dashboard));
         }
+
+
+        private void CalculateFineAndGenerateInvoice(LeningModel lending, BezoekerModel user)
+        {
+            var subscription = _context.Abonnementen.Find(user.AbonnementID);
+            if (subscription == null)
+                throw new Exception("Subscription not found");
+
+            var overdueDays = (DateTime.Now - lending.Einddatum).Days;
+
+            if (overdueDays > 0)
+            {
+                var fineAmount = overdueDays * subscription.Boetekosten;
+
+                // Add fine to Geldbank
+                var geldbank = _context.Geldbank.FirstOrDefault();
+                if (geldbank == null)
+                {
+                    geldbank = new GeldbankModel();
+                    _context.Geldbank.Add(geldbank);
+                }
+
+                geldbank.TotalEarnings += fineAmount;
+
+                // Generate invoice
+                var invoice = new FactuurModel
+                {
+                    UserId = user.Id,
+                    Amount = fineAmount,
+                    TransactionDate = DateTime.Now,
+                    Description = $"Fine for overdue return of item {lending.ItemID}",
+                    User = user
+                };
+
+                _context.Facturen.Add(invoice);
+
+                _context.SaveChanges();
+            }
+        }
+
     }
 }

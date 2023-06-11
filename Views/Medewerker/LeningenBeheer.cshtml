@@ -17,9 +17,9 @@
         @foreach (var item in ViewBag.Reservations)
         {
             <tr>
-                <td>@item.ID</td>
-                <td>@item.Titel</td>
-                <td>@item.Auteur</td>
+                <td>@item.Item.ID</td>
+                <td>@item.Item.Titel</td>
+                <td>@item.Item.Auteur</td>
                 <!-- Display more item properties -->
                 <td>
                     <form method="post" asp-action="LendItem">

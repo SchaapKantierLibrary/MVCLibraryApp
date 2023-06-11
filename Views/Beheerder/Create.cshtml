@@ -17,11 +17,6 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.SelectedRole, "Role")
-        @Html.DropDownListFor(model => model.SelectedRole, ViewBag.Roles as SelectList, new { @class = "form-control" })
-    </div>
-
-    <div class="form-group">
         @Html.LabelFor(model => model.Password)
         @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
     </div>

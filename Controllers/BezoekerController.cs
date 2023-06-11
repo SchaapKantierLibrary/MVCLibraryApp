@@ -78,6 +78,7 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
+
         [Authorize(Roles = "Bezoeker")]
         public async Task<IActionResult> Dashboard(string title = "", string authorSearch = "")
         {

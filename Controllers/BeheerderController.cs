@@ -47,7 +47,7 @@ public class BeheerderController : Controller
 
         var model = new RegisterModel
         {
-            SelectedRole = "Bezoeker" // Set the default selected role
+         
         };
 
         return View(model);

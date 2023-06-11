@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MVCLibraryApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230611151115_addmodels")]
+    [Migration("20230611152310_addmodels")]
     partial class addmodels
     {
         /// <inheritdoc />

@@ -24,7 +24,5 @@ namespace MVCLibraryApp.Models
         [Required]
         public string Naam { get; set; }
 
-        [AllowNull]
-        public string SelectedRole { get; set; }
     }
 }
