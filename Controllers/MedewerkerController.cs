@@ -247,7 +247,28 @@ namespace MVCLibraryApp.Controllers
             // Replace 'YourView' with the name of the view you want to display in case of an error
             return View("IndexBezoeker");
         }
+        [HttpPost]
+        public async Task<IActionResult> ToggleBlockUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
 
+            if (user != null)
+            {
+                var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
+                if (lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now)  // if user is blocked
+                {
+                    await _userManager.SetLockoutEndDateAsync(user, null);  // unblock the user
+                }
+                else
+                {
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);  // block the user
+                }
+
+                return RedirectToAction("IndexBezoeker");
+            }
+
+            return NotFound();
+        }
 
 
         private FactuurModel CalculateFineAndGenerateInvoice(LeningModel lending, BezoekerModel user)

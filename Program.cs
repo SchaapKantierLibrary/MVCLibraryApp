@@ -1,5 +1,3 @@
-// Programmeurs: Quinten Schaap, S1190289. Robin Kantier, S1186143.
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
+using MVCLibraryApp.Interfaces;
+using MVCLibraryApp.Services;
 
 namespace MVCLibraryApp
 {
@@ -36,6 +36,9 @@ namespace MVCLibraryApp
                 options.AccessDeniedPath = "/Bezoeker/Login";
                 options.LoginPath = "/Bezoeker/Login";
             });
+
+            // Register the Account Service
+            builder.Services.AddScoped<IAccountService, AccountService>();  // Add this line before building the app
 
             var app = builder.Build();
 
@@ -76,7 +79,7 @@ namespace MVCLibraryApp
                 defaults: new { controller = "Bezoeker", action = "Dashboard" }
             );
 
-        
+
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
 
@@ -92,8 +95,6 @@ namespace MVCLibraryApp
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError(ex, "An error occurred while seeding the database.");
             }
-
-
 
             app.Run();
         }

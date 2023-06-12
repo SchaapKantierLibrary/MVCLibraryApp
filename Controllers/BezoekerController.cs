@@ -3,20 +3,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
+using MVCLibraryApp.Services;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MVCLibraryApp.Interfaces;
 
 namespace MVCLibraryApp.Controllers
 {
+    [Authorize(Roles = "Bezoeker,Medewerker,beheerder")]
     public class BezoekerController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BezoekerModel> _userManager;
         private readonly SignInManager<BezoekerModel> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IAccountService _accountService;
 
-        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager)
+        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService)
         {
+            _accountService = accountService;
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -43,7 +48,6 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -51,20 +55,9 @@ namespace MVCLibraryApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new BezoekerModel
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    Naam = model.Naam,
-                    AbonnementID = 1
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _accountService.RegisterUser(model);
                 if (result.Succeeded)
                 {
-                    // Adding the user to the 'Bezoeker' role
-                    await _userManager.AddToRoleAsync(user, "Bezoeker");
-                    await _signInManager.SignInAsync(user, isPersistent: false); // Log in the user
                     return RedirectToAction("Dashboard");
                 }
 
@@ -78,6 +71,15 @@ namespace MVCLibraryApp.Controllers
             return View(model);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout()
+        {
+            await _accountService.LogoutUser();
+            return RedirectToAction("Index", "Home");
+        }
 
         [Authorize(Roles = "Bezoeker")]
         public async Task<IActionResult> Dashboard(string title = "", string authorSearch = "")
@@ -260,16 +262,7 @@ namespace MVCLibraryApp.Controllers
         }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AllowAnonymous]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
 
-        [Authorize(Roles = "Bezoeker")]
         public async Task<IActionResult> UserReservations()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -281,7 +274,7 @@ namespace MVCLibraryApp.Controllers
             return View(reservations);
         }
         [HttpPost]
-        [Authorize(Roles = "Bezoeker")]
+      
         public async Task<IActionResult> CancelReservation(int id)
         {
             var reservation = await _context.Reserveringen.FindAsync(id);
