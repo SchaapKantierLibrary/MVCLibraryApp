@@ -1,12 +1,17 @@
 ﻿@model MVCLibraryApp.Models.FactuurModel
+@{
+    ViewData["Title"] = "ConfirmPayment";
+}
+
 
 <h1>Confirm Payment</h1>
+
 
 <p>
     Amount to be paid: @Model.Amount
 </p>
 
-<form asp-action="Pay" method="post">
+<form asp-controller="Medewerker" asp-action="ProcessPayment" method="post">
     <input type="hidden" asp-for="Id" />
     <input type="submit" value="Pay" />
 </form>

@@ -12,6 +12,8 @@ namespace MVCLibraryApp.Models
         [ForeignKey("User")]
         public string UserId { get; set; }
 
+        public int ItemID { get; set; }
+
         public decimal Amount { get; set; }
 
         public DateTime TransactionDate { get; set; }

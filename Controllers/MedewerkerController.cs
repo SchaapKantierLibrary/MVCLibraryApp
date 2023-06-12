@@ -248,7 +248,52 @@ namespace MVCLibraryApp.Controllers
             return View("IndexBezoeker");
         }
 
-      
+
+
+        private FactuurModel CalculateFineAndGenerateInvoice(LeningModel lending, BezoekerModel user)
+        {
+            var subscription = _context.Abonnementen.Find(user.AbonnementID);
+            if (subscription == null)
+                throw new Exception("Subscription not found");
+
+            var overdueDays = (DateTime.Now - lending.Einddatum).Days;
+
+            var fineAmount = overdueDays > 0 ? overdueDays * subscription.Boetekosten : 0;
+
+            // Add fine to Geldbank only if there are overdue days
+            var geldbank = _context.Geldbank.FirstOrDefault();
+            if (geldbank == null)
+            {
+                geldbank = new GeldbankModel();
+                _context.Geldbank.Add(geldbank);
+            }
+
+            if (overdueDays > 0)
+            {
+                geldbank.TotalEarnings += fineAmount;
+            }
+
+            // Calculate reservation cost
+            var reservationCost = subscription.Reserveringskosten;
+
+            // Generate invoice
+            var invoice = new FactuurModel
+            {
+                UserId = user.Id,
+                Amount = fineAmount + reservationCost,
+                TransactionDate = DateTime.Now,
+                Description = $"Fine for overdue return of item {lending.ItemID} and reservation cost",
+                User = user
+            };
+
+            _context.Facturen.Add(invoice);
+            _context.SaveChanges();
+
+            return invoice;
+        }
+
+
+
         public IActionResult LeningenBeheer()
         {
             var availableItems = _context.Items.Where(item => item.Status == "Available").ToList();
@@ -320,17 +365,72 @@ namespace MVCLibraryApp.Controllers
                 return NotFound();
             }
 
-            lending.Status = "Returned";
-            lending.Einddatum = DateTime.Now; // Set the end date as the current date
-            lending.Item.Status = "Available"; // Set the item status to Available
-
             var user = _context.Users.Find(lending.BezoekerID);
 
             // Call our new method
-            CalculateFineAndGenerateInvoice(lending, user);
+            var invoice = CalculateFineAndGenerateInvoice(lending, user);
 
-            return RedirectToAction("ConfirmPayment", "Medewerker");
+            // Save changes
+            _context.SaveChanges();
+
+            if (invoice != null)
+            {
+                return RedirectToAction("ConfirmPayment", "Medewerker", new { id = invoice.Id });
+            }
+
+            // return to LeningenBeheer if there is no invoice (item is returned on time)
+            return RedirectToAction("LeningenBeheer");
         }
+
+
+        public IActionResult ConfirmPayment(int Id)
+        {
+            // Fetch the specific invoice from the database
+            var invoice = _context.Facturen.Find(Id);
+
+            if (invoice == null)
+            {
+                // Handle the case when no invoice is found
+                return NotFound();
+            }
+
+            return View(invoice);  // Pass invoice to the view
+        }
+
+        [HttpPost]
+        public IActionResult ProcessPayment(int Id)
+        {
+            var invoice = _context.Facturen.Find(Id);
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            // Mark invoice as Paid
+            invoice.Description = "Paid";
+
+            // Fetch the lending
+            var lending = _context.Lenings.Include(l => l.Item).FirstOrDefault(l => l.Item.ID == invoice.ItemID);
+            if (lending == null)
+            {
+                return NotFound();
+            }
+
+            // Update the item status and lending status
+            lending.Status = "Returned";
+            lending.Einddatum = DateTime.Now;
+            lending.Item.Status = "Available";
+
+            // Save changes
+            _context.SaveChanges();
+
+            // Redirect to the LeningenBeheer action
+            return RedirectToAction("LeningenBeheer", "Medewerker");
+        }
+
+
+
+
 
         // GET: ItemModels
         public async Task<IActionResult> IndexItem()
@@ -339,11 +439,6 @@ namespace MVCLibraryApp.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        [HttpGet]
-        public IActionResult ConfirmPayment()
-        {
-            return View();
-        }
 
         public async Task<IActionResult> DetailsItem(int? id)
         {
@@ -565,44 +660,6 @@ namespace MVCLibraryApp.Controllers
             return RedirectToAction(nameof(Dashboard));
         }
 
-
-        private void CalculateFineAndGenerateInvoice(LeningModel lending, BezoekerModel user)
-        {
-            var subscription = _context.Abonnementen.Find(user.AbonnementID);
-            if (subscription == null)
-                throw new Exception("Subscription not found");
-
-            var overdueDays = (DateTime.Now - lending.Einddatum).Days;
-
-            if (overdueDays > 0)
-            {
-                var fineAmount = overdueDays * subscription.Boetekosten;
-
-                // Add fine to Geldbank
-                var geldbank = _context.Geldbank.FirstOrDefault();
-                if (geldbank == null)
-                {
-                    geldbank = new GeldbankModel();
-                    _context.Geldbank.Add(geldbank);
-                }
-
-                geldbank.TotalEarnings += fineAmount;
-
-                // Generate invoice
-                var invoice = new FactuurModel
-                {
-                    UserId = user.Id,
-                    Amount = fineAmount,
-                    TransactionDate = DateTime.Now,
-                    Description = $"Fine for overdue return of item {lending.ItemID}",
-                    User = user
-                };
-
-                _context.Facturen.Add(invoice);
-
-                _context.SaveChanges();
-            }
-        }
 
     }
 }

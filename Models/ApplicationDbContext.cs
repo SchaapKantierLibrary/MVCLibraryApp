@@ -29,38 +29,7 @@ namespace MVCLibraryApp.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-    //       base.OnModelCreating(modelBuilder);
-
-    //var hasher = new PasswordHasher<IdentityUser>();
-
-    //modelBuilder.Entity<IdentityRole>().HasData(
-    //    new IdentityRole { Id = "1", Name = "Bezoeker", NormalizedName = "BEZOEKER" },
-    //    new IdentityRole { Id = "2", Name = "Medewerker", NormalizedName = "MEDEWERKER" },
-    //    new IdentityRole { Id = "3", Name = "Beheerder", NormalizedName = "BEHEERDER" }
-    //);
-
-    //// Use a GUID for the user's Id.
-    //string adminId = Guid.NewGuid().ToString();
-
-    //modelBuilder.Entity<IdentityUser>().HasData(
-    //    new IdentityUser
-    //    {
-    //        Id = adminId,
-    //        UserName = "admin@example.com",
-    //        NormalizedUserName = "ADMIN@EXAMPLE.COM",
-    //        Email = "admin@example.com",
-    //        NormalizedEmail = "ADMIN@EXAMPLE.COM",
-    //        EmailConfirmed = true,
-    //        PasswordHash = hasher.HashPassword(null, "Password123!"),
-    //        SecurityStamp = string.Empty,
-    //    });
-
-    // modelBuilder.Entity<IdentityUserRole<string>>().HasData(
-    //    new IdentityUserRole<string>
-    //    {
-    //        RoleId = "3", 
-    //        UserId = adminId
-    //    });
+   
 
 
             base.OnModelCreating(modelBuilder);
@@ -132,15 +101,15 @@ namespace MVCLibraryApp.Models
         {
             var abonnementen = new[]
             {
-        new AbonnementModel { ID = -1, Type = "Free", MaximaleItems = 1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.00M, Boetekosten = 0.00M, Abonnementskosten = 0.00M },
-        new AbonnementModel { ID = -2, Type = "Jeugd", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.00M, Abonnementskosten = 5.00M },
-        new AbonnementModel { ID = -3, Type = "Budget", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 1, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 10.00M },
-        new AbonnementModel { ID = -4, Type = "Basis", MaximaleItems = -1, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 15.00M }
+        new AbonnementModel { ID = 1, Type = "Free", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.50M, Boetekosten = 0.50M, Abonnementskosten = 0.00M },
+        new AbonnementModel { ID = 2, Type = "Jeugd", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.00M, Abonnementskosten = 0.00M },
+        new AbonnementModel { ID = 3, Type = "Budget", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 1, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 1.00M },
+        new AbonnementModel { ID = 4, Type = "Basis", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 3, Reserveringskosten = 0.25M, Boetekosten = 0.30M, Abonnementskosten = 4.00M },
+        new AbonnementModel { ID = 5, Type = "Top", MaximaleItems = 10, Uitleentermijn = 21, Verlengingen = 5, Reserveringskosten = 0.00M, Boetekosten = 0.00M, Abonnementskosten = 6.00M }
     };
 
             builder.Entity<AbonnementModel>().HasData(abonnementen);
         }
-
 
         private void SeedLocations(ModelBuilder builder)
         {
