@@ -2,65 +2,40 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="my-4">
-    <h2>Where are you?</h2>
-    <form method="post" action="@Url.Action("Dashboard", "Bezoeker")">
-        <input type="hidden" name="selectedLocationId" value="@ViewBag.SelectedLocationId" />
-        <select id="locationDropdown" class="form-control" name="locationId">
-            @foreach (var location in ViewBag.Locations)
-            {
-                if (location.ID == ViewBag.SelectedLocationId)
-                {
-                    <option value="@location.ID" selected>@location.Beschrijving</option>
-                }
-                else
-                {
-                    <option value="@location.ID">@location.Beschrijving</option>
-                }
-            }
-        </select>
-        <input type="text" class="form-control" name="title" value="" placeholder="Search Items" />
-        <input type="text" class="form-control" name="authorSearch" value="" placeholder="Search authors" />
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+<style>
+    .fancy-font {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        color: #FFFFFF;
+        width: calc(50% - 5%);
+        height: 200px;
+        padding: 20px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-radius: 0;
+        margin-bottom: 2.5%;
+    }
+
+    .btn-primary {
+        background-color: #ff6347;
+        border-color: #ff6347;
+    }
+
+    .btn-success {
+        background-color: #32cd32;
+        border-color: #32cd32;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Visitor Dashboard</h1>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-4">
+        <!-- Stylished Buttons to Other Views -->
+        <a class="btn btn-primary btn-lg fancy-font" asp-action="Beheer" asp-controller="Bezoeker">Your Reservations</a>
+        <a class="btn btn-primary btn-lg fancy-font" asp-action="IndexItems" asp-controller="Bezoeker">Search Items</a>
+    </div>
 </div>
-
-@if (ViewBag.Items != null && ViewBag.Items.Count > 0)
-{
-    <h2>Items:</h2>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Author</th>
-                <th scope="col">Year of Publication</th>
-                <th scope="col">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in ViewBag.Items)
-            {
-                <tr>
-                    <th scope="row">@item.ID</th>
-                    <td>@item.Titel</td>
-                    <td>@item.Auteur.Name</td>
-                    <td>@item.Publicatiejaar</td>
-                    <td>@item.Status</td>
-                    <td>
-                        @if (item.Status != "Not Available") // Show the button only if the item is available
-                        {
-                            <form method="post" action="@Url.Action("ReserveItem", "Bezoeker")">
-                                <input type="hidden" name="id" value="@item.ID" />
-                                <button type="submit" class="btn btn-primary">Reserve</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-  
-}

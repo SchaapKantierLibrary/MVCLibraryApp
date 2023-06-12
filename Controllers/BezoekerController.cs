@@ -28,6 +28,13 @@ namespace MVCLibraryApp.Controllers
             _roleManager = roleManager;
         }
 
+
+        public async Task <IActionResult> Dashboard()
+        {
+            return View();
+        }
+
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register()
@@ -81,8 +88,7 @@ namespace MVCLibraryApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize(Roles = "Bezoeker")]
-        public async Task<IActionResult> Dashboard(string title = "", string authorSearch = "")
+        public async Task<IActionResult> IndexItems(string title = "", string authorSearch = "")
         {
             ViewBag.Title = title;
             ViewBag.AuthorSearch = authorSearch;
@@ -111,7 +117,7 @@ namespace MVCLibraryApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Dashboard(int locationId, string title, string authorSearch)
+        public async Task<IActionResult> IndexItems(int locationId, string title, string authorSearch)
         {
             ViewBag.Locations = await _context.Locaties.ToListAsync();
             ViewBag.SelectedLocationId = locationId;
