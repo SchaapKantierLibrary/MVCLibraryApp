@@ -3,31 +3,25 @@
 }
 
 <style>
-     .fancy-font {
-         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A more readable fancy font */
-         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-         color: #FFFFFF; /* White text for better contrast against vibrant colors */
-         width: calc(50% - 5%); /* Two buttons will fill the width, with 2.5% margin on either side */
-         height: 200px; /* Adjust to the size of your hand palm */
-         padding: 20px; /* Added padding for better aesthetics */
-         box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
-         display: flex; /* Aligns text in the center, both vertically and horizontally */
-         justify-content: center;
-         align-items: center;
-         text-align: center;
-         border-radius: 0; /* No rounded corners for buttons */
-         margin-bottom: 2.5%;
-     }
+    .fancy-font {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More readable fancy font */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        border-radius: 0px; /* Removed border-radius for squared-off buttons */
+        width: 45%;
+        margin: 2.5%;
+        display: block; /* Block display to align 2 buttons per line */
+        box-sizing: border-box; /* Ensures padding doesn't increase button size */
+    }
 
-     .btn-primary {
-         background-color: #ff6347; /* Vibrant Tomato color */
-         border-color: #ff6347;
-     }
+    .btn-primary {
+        background-color: #007bff; /* Modify to your desired primary color */
+        border-color: #007bff; /* Modify to your desired primary color */
+    }
 
-     .btn-success {
-         background-color: #32cd32; /* Vibrant LimeGreen color */
-         border-color: #32cd32;
-     }
+    .btn-success {
+        background-color: #28a745; /* Modify to your desired success color */
+        border-color: #28a745; /* Modify to your desired success color */
+    }
 </style>
 
 <div class="container mt-5">
