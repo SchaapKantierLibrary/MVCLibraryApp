@@ -49,7 +49,50 @@ public class BeheerderController : Controller
         ViewBag.LockoutStatus = userLockoutStatus;
 
         return View(users);
+
+    }
+    // GET: ItemModels/Delete/5
+    public async Task<IActionResult> DeleteItem(int? id)
+    {
+        if (id == null || _context.Items == null)
+        {
+            return NotFound();
+        }
+
+        var itemModel = await _context.Items
+            .Include(i => i.Auteur)
+            .Include(i => i.Locatie)
+            .FirstOrDefaultAsync(m => m.ID == id);
+        if (itemModel == null)
+        {
+            return NotFound();
+        }
+
+        return View(itemModel);
     }
 
+    // POST: ItemModels/Delete/5
+    [HttpPost, ActionName("DeleteItemConfirmed")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteItemConfirmed(int id)
+    {
+        if (_context.Items == null)
+        {
+            return Problem("Entity set 'ApplicationDbContext.Items'  is null.");
+        }
+        var itemModel = await _context.Items.FindAsync(id);
+        if (itemModel != null)
+        {
+            _context.Items.Remove(itemModel);
+        }
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction("IndexItem", "Medewerker");
+    }
+
+    private bool ItemModelExists(int id)
+    {
+        return (_context.Items?.Any(e => e.ID == id)).GetValueOrDefault();
+    }
 
 }
