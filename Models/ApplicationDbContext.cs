@@ -29,6 +29,40 @@ namespace MVCLibraryApp.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+    //       base.OnModelCreating(modelBuilder);
+
+    //var hasher = new PasswordHasher<IdentityUser>();
+
+    //modelBuilder.Entity<IdentityRole>().HasData(
+    //    new IdentityRole { Id = "1", Name = "Bezoeker", NormalizedName = "BEZOEKER" },
+    //    new IdentityRole { Id = "2", Name = "Medewerker", NormalizedName = "MEDEWERKER" },
+    //    new IdentityRole { Id = "3", Name = "Beheerder", NormalizedName = "BEHEERDER" }
+    //);
+
+    //// Use a GUID for the user's Id.
+    //string adminId = Guid.NewGuid().ToString();
+
+    //modelBuilder.Entity<IdentityUser>().HasData(
+    //    new IdentityUser
+    //    {
+    //        Id = adminId,
+    //        UserName = "admin@example.com",
+    //        NormalizedUserName = "ADMIN@EXAMPLE.COM",
+    //        Email = "admin@example.com",
+    //        NormalizedEmail = "ADMIN@EXAMPLE.COM",
+    //        EmailConfirmed = true,
+    //        PasswordHash = hasher.HashPassword(null, "Password123!"),
+    //        SecurityStamp = string.Empty,
+    //    });
+
+    // modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+    //    new IdentityUserRole<string>
+    //    {
+    //        RoleId = "3", 
+    //        UserId = adminId
+    //    });
+
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<BezoekerModel>()
@@ -91,6 +125,7 @@ namespace MVCLibraryApp.Models
             SeedLocations(modelBuilder);
             SeedAuteurs(modelBuilder);
             SeedItems(modelBuilder);
+            SeedGeldbank(modelBuilder);
         }
 
         private void SeedAbonnementen(ModelBuilder builder)
@@ -150,6 +185,16 @@ namespace MVCLibraryApp.Models
             }).ToArray();
 
             builder.Entity<ItemModel>().HasData(items);
+        }
+        private void SeedGeldbank(ModelBuilder builder)
+        {
+            var Geldbank = Enumerable.Range(1, 1).Select(index => new GeldbankModel
+            {
+                ID = index,
+                TotalEarnings = 0m
+            });
+            builder.Entity<GeldbankModel>().HasData(Geldbank);
+
         }
 
 
