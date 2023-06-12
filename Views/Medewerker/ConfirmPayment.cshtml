@@ -12,6 +12,6 @@
 </p>
 
 <form asp-controller="Medewerker" asp-action="ProcessPayment" method="post">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="id" value="@Model.Id" />  <!-- Use "id" as the name attribute -->
     <input type="submit" value="Pay" />
 </form>

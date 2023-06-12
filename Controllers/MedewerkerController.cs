@@ -273,24 +273,43 @@ namespace MVCLibraryApp.Controllers
                 geldbank.TotalEarnings += fineAmount;
             }
 
+            // Check if an invoice already exists for the given ItemID and UserId
+            var existingInvoice = _context.Facturen.FirstOrDefault(f =>
+                f.ItemID == lending.ItemID && f.UserId == user.Id);
+
+            FactuurModel invoice;
+
+            if (existingInvoice != null)
+            {
+                // Use the existing invoice if found
+                invoice = existingInvoice;
+                invoice.Amount += fineAmount; // Add fine to the existing invoice amount
+            }
+            else
+            {
+                // Create a new invoice
+                invoice = new FactuurModel
+                {
+                    UserId = user.Id,
+                    ItemID = lending.ItemID,
+                    Amount = fineAmount,
+                    TransactionDate = DateTime.Now,
+                    Description = $"Fine for overdue return of item {lending.ItemID}",
+                    User = user
+                };
+
+                _context.Facturen.Add(invoice);
+            }
+
             // Calculate reservation cost
             var reservationCost = subscription.Reserveringskosten;
+            invoice.Amount += reservationCost; // Add reservation cost to the invoice amount
 
-            // Generate invoice
-            var invoice = new FactuurModel
-            {
-                UserId = user.Id,
-                Amount = fineAmount + reservationCost,
-                TransactionDate = DateTime.Now,
-                Description = $"Fine for overdue return of item {lending.ItemID} and reservation cost",
-                User = user
-            };
-
-            _context.Facturen.Add(invoice);
             _context.SaveChanges();
 
             return invoice;
         }
+
 
 
 
@@ -396,11 +415,10 @@ namespace MVCLibraryApp.Controllers
 
             return View(invoice);  // Pass invoice to the view
         }
-
         [HttpPost]
-        public IActionResult ProcessPayment(int Id)
+        public IActionResult ProcessPayment(int id)  // Change parameter name from "Id" to "id"
         {
-            var invoice = _context.Facturen.Find(Id);
+            var invoice = _context.Facturen.Find(id);  // Use the "id" parameter
             if (invoice == null)
             {
                 return NotFound();
@@ -420,6 +438,13 @@ namespace MVCLibraryApp.Controllers
             lending.Status = "Returned";
             lending.Einddatum = DateTime.Now;
             lending.Item.Status = "Available";
+
+            // Update Geldbank TotalEarnings
+            var geldbank = _context.Geldbank.FirstOrDefault(g => g.ID == 1);
+            if (geldbank != null)
+            {
+                geldbank.TotalEarnings += invoice.Amount;
+            }
 
             // Save changes
             _context.SaveChanges();
