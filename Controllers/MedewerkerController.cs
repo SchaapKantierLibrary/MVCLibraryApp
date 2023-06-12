@@ -453,7 +453,30 @@ namespace MVCLibraryApp.Controllers
             return RedirectToAction("LeningenBeheer", "Medewerker");
         }
 
+        public async Task<IActionResult> IndexFactuur()
+        {
+            var applicationDbContext = _context.Facturen.Include(f => f.User);
+            return View(await applicationDbContext.ToListAsync());
+        }
 
+        // GET: FactuurModels/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.Facturen == null)
+            {
+                return NotFound();
+            }
+
+            var factuurModel = await _context.Facturen
+                .Include(f => f.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (factuurModel == null)
+            {
+                return NotFound();
+            }
+
+            return View(factuurModel);
+        }
 
 
 
