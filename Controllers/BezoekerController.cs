@@ -198,7 +198,7 @@ namespace MVCLibraryApp.Controllers
                 // handle exception
             }
 
-            return RedirectToAction(nameof(Dashboard));
+            return RedirectToAction(nameof(ReserveItem));
         }
 
 

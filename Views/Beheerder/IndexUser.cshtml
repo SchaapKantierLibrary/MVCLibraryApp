@@ -1,0 +1,61 @@
+﻿@model IEnumerable<BezoekerModel>
+
+@{
+    ViewData["Title"] = "IndexUser";
+}
+
+<h2>IndexUser</h2>
+
+<p>
+    <a asp-area="" asp-controller="Medewerker" asp-action="CreateBezoeker">Add a new user</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Changes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>
+                    @foreach (var role in ViewBag.Roles[user.Id])
+                    {
+                        @role
+                    }
+                </td>
+                <td>@user.Email</td>
+                <td>
+                    <a asp-controller="Medewerker" asp-action="EditUser" asp-route-id="@user.Id">Edit</a> |
+
+                    <!-- DELETE Form -->
+                    <form asp-controller="Medewerker" asp-action="DeleteUser" asp-route-id="@user.Id" method="post" style="display: inline-block;">
+                        <button type="submit">Delete</button>
+                    </form>
+
+                </td>
+                <td>
+                    <form asp-controller="Medewerker" asp-action="ToggleBlockUser" method="post">
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <button type="submit">
+                            @if (ViewBag.LockoutStatus[user.Id])
+                            {
+                                <text>Unblock</text>
+                            }
+                            else
+                            {
+                                <text>Block</text>
+                            }
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

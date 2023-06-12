@@ -4,34 +4,29 @@
 
 <style>
     .fancy-font {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More readable fancy font */
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        color: #FFFFFF;
-        width: calc(50% - 5%);
-        height: 200px;
-        padding: 20px;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        border-radius: 0;
-        margin-bottom: 2.5%;
+        border-radius: 0px; /* Removed border-radius for squared-off buttons */
+        width: 45%;
+        margin: 2.5%;
+        display: block; /* Block display to align 2 buttons per line */
+        box-sizing: border-box; /* Ensures padding doesn't increase button size */
     }
 
     .btn-primary {
-        background-color: #ff6347;
-        border-color: #ff6347;
+        background-color: #007bff; /* Modify to your desired primary color */
+        border-color: #007bff; /* Modify to your desired primary color */
     }
 
     .btn-success {
-        background-color: #32cd32;
-        border-color: #32cd32;
+        background-color: #28a745; /* Modify to your desired success color */
+        border-color: #28a745; /* Modify to your desired success color */
     }
 </style>
 
+
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Visitor Dashboard</h1>
+    <h1 class="text-center mb-4">Bezoeker Dashboard</h1>
 
     <div class="d-flex flex-wrap justify-content-between align-items-center mt-4">
         <!-- Stylished Buttons to Other Views -->
