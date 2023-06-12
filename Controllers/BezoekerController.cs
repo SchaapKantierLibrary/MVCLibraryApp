@@ -180,7 +180,13 @@ namespace MVCLibraryApp.Controllers
             {
                 // Pass error message to the view
                 ViewData["ErrorMessage"] = "You have reached the maximum number of reservations allowed by your subscription.";
-                // Assuming an action named "Index" in the same controller
+
+                // Load the items for the "IndexItems" view
+                ViewBag.Locations = await _context.Locaties.ToListAsync();
+                IQueryable<ItemModel> itemsQuery = _context.Items.Include(i => i.Auteur);
+                ViewBag.Items = await itemsQuery.ToListAsync();
+
+                // Return to the "IndexItems" view
                 return View("IndexItems");
             }
 
