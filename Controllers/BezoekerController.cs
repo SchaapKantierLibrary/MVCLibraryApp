@@ -162,15 +162,28 @@ namespace MVCLibraryApp.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            // Find the current user
+            var currentUser = await _context.Bezoekers.Include(b => b.Abonnement).FirstOrDefaultAsync(b => b.Id == userId);
+
+            if (currentUser == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Get the maximum allowed reservations from the user's subscription
+            int maxReservations = currentUser.Abonnement.MaximaleItems;
+
             // Count the existing reservations for the current user
             int existingReservations = _context.Reserveringen.Count(r => r.BezoekerID == userId);
 
-            if (existingReservations >= 3)
+            if (existingReservations >= maxReservations)
             {
-                // You can return a specific error view, pass an error message to the view, or simply return BadRequest.
-                // Here I'm returning BadRequest with a simple error message.
-                return BadRequest("You already have 3 or more reservations.");
+                // Pass error message to the view
+                ViewData["ErrorMessage"] = "You have reached the maximum number of reservations allowed by your subscription.";
+                // Assuming an action named "Index" in the same controller
+                return View("IndexItems");
             }
+
 
             var item = await _context.Items.FindAsync(id);
             if (item == null)
@@ -198,7 +211,7 @@ namespace MVCLibraryApp.Controllers
                 // handle exception
             }
 
-            return RedirectToAction(nameof(ReserveItem));
+            return RedirectToAction(nameof(IndexItems));
         }
 
 

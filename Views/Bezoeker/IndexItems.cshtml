@@ -1,10 +1,19 @@
 ﻿@{
     ViewData["Title"] = "IndexItems";
 }
+@{
+    var errorMessage = ViewData["ErrorMessage"] as string;
+}
 
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
 <div class="my-4">
     <h2>Where are you?</h2>
-    <form method="post" action="@Url.Action("Dashboard", "Bezoeker")">
+    <form method="post" action="@Url.Action("IndexItems", "Bezoeker")">
         <input type="hidden" name="selectedLocationId" value="@ViewBag.SelectedLocationId" />
         <select id="locationDropdown" class="form-control" name="locationId">
             @foreach (var location in ViewBag.Locations)
