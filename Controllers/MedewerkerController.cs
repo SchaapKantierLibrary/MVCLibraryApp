@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MVCLibraryApp.Controllers
 {
-    [Authorize(Roles = "Medewerker")]
+    [Authorize(Roles = "Medewerker,Beheerder")]
     public class MedewerkerController : Controller
     {
         private readonly ApplicationDbContext _context;
