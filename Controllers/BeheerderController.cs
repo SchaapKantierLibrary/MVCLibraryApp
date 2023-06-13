@@ -388,6 +388,138 @@ public class BeheerderController : Controller
         return View("IndexUser");
     }
 
+    // GET: LocatieModels
+    public async Task<IActionResult> IndexLocatie()
+    {
+        var locaties = await _context.Locaties.ToListAsync();
+        return View(locaties);
+    }
+
+
+    
+    // GET: LocatieModels/Create
+    public IActionResult CreateLocatie()
+    {
+        return View(new LocatieViewModel());
+    }
+
+    // POST: LocatieModels/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateLocatie(LocatieViewModel locatieViewModel)
+    {
+        if (ModelState.IsValid)
+        {
+            var locatieModel = new LocatieModel
+            {
+                Beschrijving = locatieViewModel.Beschrijving
+            };
+
+            _context.Add(locatieModel);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(IndexLocatie));
+        }
+
+        return View(locatieViewModel);
+    }
+
+
+    // GET: LocatieModels/Edit/5
+    public async Task<IActionResult> EditLocatie(string beschrijving)
+    {
+        if (string.IsNullOrEmpty(beschrijving) || _context.Locaties == null)
+        {
+            return NotFound();
+        }
+
+        var locatieModel = await _context.Locaties.FirstOrDefaultAsync(l => l.Beschrijving == beschrijving);
+        if (locatieModel == null)
+        {
+            return NotFound();
+        }
+
+        var locatieViewModel = new LocatieViewModel
+        {
+            Beschrijving = locatieModel.Beschrijving
+        };
+
+        return View(locatieViewModel);
+    }
+
+
+    // POST: LocatieModels/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditLocatie(LocatieViewModel locatieViewModel)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                var locatieModel = await _context.Locaties.FirstOrDefaultAsync(l => l.Beschrijving == locatieViewModel.Beschrijving);
+                if (locatieModel == null)
+                {
+                    return NotFound();
+                }
+
+                // Update other properties of locatieModel as needed
+
+                _context.Update(locatieModel);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Handle concurrency exception if needed
+                throw;
+            }
+            return RedirectToAction(nameof(IndexLocatie));
+        }
+
+        return View(locatieViewModel);
+    }
+
+
+
+    // GET: LocatieModels/Delete/5
+    public async Task<IActionResult> DeleteLocatie(int? id)
+    {
+        if (id == null || _context.Locaties == null)
+        {
+            return NotFound();
+        }
+
+        var locatieModel = await _context.Locaties.FirstOrDefaultAsync(m => m.ID == id);
+        if (locatieModel == null)
+        {
+            return NotFound();
+        }
+
+        return View(locatieModel);
+    }
+
+    // POST: LocatieModels/Delete/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteLocatieConfirmed(int id)
+    {
+        if (_context.Locaties == null)
+        {
+            return Problem("Entity set 'ApplicationDbContext.Locaties' is null.");
+        }
+
+        var locatieModel = await _context.Locaties.FindAsync(id);
+        if (locatieModel == null)
+        {
+            return NotFound();
+        }
+
+        _context.Locaties.Remove(locatieModel);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(IndexLocatie));
+    }
+
+
 
 
 
