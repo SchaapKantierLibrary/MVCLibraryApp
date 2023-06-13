@@ -52,6 +52,8 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
+
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -316,6 +318,8 @@ namespace MVCLibraryApp.Controllers
 
             return View(reservations);
         }
+
+    
     }
 
 }
