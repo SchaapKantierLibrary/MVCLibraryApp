@@ -206,6 +206,129 @@ public class BeheerderController : Controller
 
         return View(model);
     }
+    [HttpPost]
+    public async Task<IActionResult> ToggleBlockUser(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user != null)
+        {
+            var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
+            if (lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now)  // if user is blocked
+            {
+                await _userManager.SetLockoutEndDateAsync(user, null);  // unblock the user
+            }
+            else
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);  // block the user
+            }
+
+            return RedirectToAction("IndexUser");
+        }
+
+        return NotFound();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditUser(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Retrieve user roles and select the first one (assuming a user has only one role)
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault();
+
+        // Retrieve the Abonnement list for the dropdown menu
+        var abonnementenList = _context.Abonnementen.ToList();
+        ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type");
+
+        // Retrieve the Roles list for the dropdown menu
+        var rolesList = await _roleManager.Roles.ToListAsync();
+        ViewBag.Roles = new SelectList(rolesList, "Name", "Name");
+
+        var model = new UserViewModel
+        {
+            Email = user.Email,
+            Naam = user.Naam,
+            AbonnementID = user.AbonnementID,
+            Role = role
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditUser(string id, UserViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.Email = model.Email;
+            user.Naam = model.Naam;
+            user.AbonnementID = model.AbonnementID;
+
+            // Handle password update
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                // Remove old password
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetResult = await _userManager.ResetPasswordAsync(user, token, model.Password);
+                if (!resetResult.Succeeded)
+                {
+                    foreach (var error in resetResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    // Repopulate ViewBag properties
+                    ViewBag.Abonnementen = new SelectList(_context.Abonnementen.ToList(), "ID", "Type");
+                    ViewBag.Roles = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name");
+                    return View(model);
+                }
+            }
+
+            // Update user info
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                // Update the user's role if it's changed
+                var roles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, roles);
+
+                if (!String.IsNullOrEmpty(model.Role))
+                {
+                    await _userManager.AddToRoleAsync(user, model.Role);
+                }
+
+                return RedirectToAction("IndexUser");
+            }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+        }
+
+        // If we got this far, something failed, so redisplay form
+        ViewBag.Abonnementen = new SelectList(_context.Abonnementen.ToList(), "ID", "Type");
+        ViewBag.Roles = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name");
+
+        return View(model);
+    }
+
 
 
 

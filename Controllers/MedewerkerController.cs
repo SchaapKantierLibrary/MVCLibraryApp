@@ -247,6 +247,7 @@ namespace MVCLibraryApp.Controllers
             // Replace 'YourView' with the name of the view you want to display in case of an error
             return View("IndexBezoeker");
         }
+
         [HttpPost]
         public async Task<IActionResult> ToggleBlockUser(string id)
         {

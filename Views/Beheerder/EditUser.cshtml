@@ -1,6 +1,6 @@
-﻿@model MVCLibraryApp.ViewModels.BezoekerViewModel
+﻿@model MVCLibraryApp.ViewModels.UserViewModel
 @{
-    ViewData["Title"] = "Edit Bezoeker";
+    ViewData["Title"] = "Edit User";
 }
 
 <h1>Edit Bezoeker</h1>
@@ -9,8 +9,8 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditBezoeker" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div> <!-- Display all model-level errors -->
+        <form asp-action="EditUser" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
@@ -31,9 +31,11 @@
                 <select asp-for="AbonnementID" asp-items="ViewBag.Abonnementen" class="form-control"></select>
                 <span asp-validation-for="AbonnementID" class="text-danger"></span>
             </div>
-
-           
-
+            <div class="form-group">
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" asp-items="ViewBag.Roles" class="form-control"></select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -42,7 +44,7 @@
 </div>
 
 <div>
-    <a asp-action="IndexBezoeker">Back to List</a>
+    <a asp-action="IndexUser">Back to List</a>
 </div>
 
 @section Scripts {

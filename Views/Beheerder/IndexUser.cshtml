@@ -41,7 +41,7 @@
 
                 </td>
                 <td>
-                    <form asp-controller="Medewerker" asp-action="ToggleBlockUser" method="post">
+                    <form asp-controller="Beheerder" asp-action="ToggleBlockUser" method="post">
                         <input type="hidden" name="id" value="@user.Id" />
                         <button type="submit">
                             @if (ViewBag.LockoutStatus[user.Id])
