@@ -70,13 +70,13 @@ namespace MVCLibraryApp.Controllers
                 Console.WriteLine(ex.Message);
             }
 
-            return View();
+            return View(new CreateBezoekerViewModel());
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateBezoeker(BezoekerViewModel model)
+        public async Task<IActionResult> CreateBezoeker(CreateBezoekerViewModel model)
         {
             try
             {

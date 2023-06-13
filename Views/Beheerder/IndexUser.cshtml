@@ -7,7 +7,7 @@
 <h2>IndexUser</h2>
 
 <p>
-    <a asp-area="" asp-controller="Medewerker" asp-action="CreateBezoeker">Add a new user</a>
+    <a asp-area="" asp-controller="Beheerder" asp-action="CreateUser">Add a new user</a>
 </p>
 
 <table class="table">
@@ -32,10 +32,10 @@
                 </td>
                 <td>@user.Email</td>
                 <td>
-                    <a asp-controller="Medewerker" asp-action="EditUser" asp-route-id="@user.Id">Edit</a> |
+                    <a asp-controller="Beheerder" asp-action="EditUser" asp-route-id="@user.Id">Edit</a> |
 
                     <!-- DELETE Form -->
-                    <form asp-controller="Medewerker" asp-action="DeleteUser" asp-route-id="@user.Id" method="post" style="display: inline-block;">
+                    <form asp-controller="Beheerder" asp-action="DeleteUser" asp-route-id="@user.Id" method="post" style="display: inline-block;">
                         <button type="submit">Delete</button>
                     </form>
 
