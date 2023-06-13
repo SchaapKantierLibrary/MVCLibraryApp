@@ -95,4 +95,40 @@ public class BeheerderController : Controller
         return (_context.Items?.Any(e => e.ID == id)).GetValueOrDefault();
     }
 
+     public async Task<IActionResult> DeleteAuthor(int? id)
+        {
+            if (id == null || _context.Auteurs == null)
+            {
+                return NotFound();
+            }
+
+            var auteurModel = await _context.Auteurs
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (auteurModel == null)
+            {
+                return NotFound();
+            }
+
+            return View(auteurModel);
+        }
+
+        // POST: AuteurModels/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAuthorConfirmed(int id)
+        {
+            if (_context.Auteurs == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Auteurs'  is null.");
+            }
+            var auteurModel = await _context.Auteurs.FindAsync(id);
+            if (auteurModel != null)
+            {
+                _context.Auteurs.Remove(auteurModel);
+            }
+            
+            await _context.SaveChangesAsync();
+            return RedirectToAction("IndexAuthor", "Medewerker");
+        }
+
 }
