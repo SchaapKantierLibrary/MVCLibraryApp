@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MVCLibraryApp.Interfaces;
 using MVCLibraryApp.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MVCLibraryApp.Services
 {
-    public class UserRedirectionService
+    public class UserRedirectionService : IUserRedirectionService
     {
         private readonly UserManager<BezoekerModel> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;

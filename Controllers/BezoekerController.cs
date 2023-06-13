@@ -18,9 +18,9 @@ namespace MVCLibraryApp.Controllers
         private readonly SignInManager<BezoekerModel> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IAccountService _accountService;
-        private readonly UserRedirectionService _redirectionService;
+        private readonly IUserRedirectionService _redirectionService;
 
-        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService, UserRedirectionService redirectionService)
+        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService, IUserRedirectionService redirectionService)
         {
             _accountService = accountService;
             _context = context;
