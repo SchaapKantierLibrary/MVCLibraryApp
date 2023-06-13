@@ -690,7 +690,7 @@ namespace MVCLibraryApp.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("ItemsAndAuthors");
+            return RedirectToAction("IndexAuthor");
         }
        
         [HttpPost]
