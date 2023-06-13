@@ -17,9 +17,9 @@ public class BeheerderController : Controller
     private readonly SignInManager<BezoekerModel> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IAccountService _accountService;
-    private readonly UserRedirectionService _redirectionService;
+    private readonly IUserRedirectionService _redirectionService;
 
-    public BeheerderController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService, UserRedirectionService redirectionService)
+    public BeheerderController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService, IUserRedirectionService redirectionService)
     {
         _accountService = accountService;
         _context = context;
@@ -487,7 +487,6 @@ public class BeheerderController : Controller
     }
 
 
-
     // GET: LocatieModels/Delete/5
     public async Task<IActionResult> DeleteLocatie(int? id)
     {
@@ -496,7 +495,9 @@ public class BeheerderController : Controller
             return NotFound();
         }
 
-        var locatieModel = await _context.Locaties.FirstOrDefaultAsync(m => m.ID == id);
+        var locatieModel = await _context.Locaties
+            .Include(l => l.Items) // Include related items
+            .FirstOrDefaultAsync(m => m.ID == id);
         if (locatieModel == null)
         {
             return NotFound();
@@ -504,6 +505,7 @@ public class BeheerderController : Controller
 
         return View(locatieModel);
     }
+
 
     // POST: LocatieModels/Delete/5
     [HttpPost]

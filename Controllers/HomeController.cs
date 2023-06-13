@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using MVCLibraryApp.Services;
+using MVCLibraryApp.Interfaces;
 
 namespace MVCLibraryApp.Controllers
 {
@@ -15,9 +15,9 @@ namespace MVCLibraryApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BezoekerModel> _userManager; // Add the _userManager field
-        private readonly UserRedirectionService _redirectionService;
+        private readonly IUserRedirectionService _redirectionService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<BezoekerModel> userManager, UserRedirectionService redirectionService) // Add redirectionService to the parameters
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<BezoekerModel> userManager, IUserRedirectionService redirectionService) // Add redirectionService to the parameters
         {
             _logger = logger;
             _context = context;

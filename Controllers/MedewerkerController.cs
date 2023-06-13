@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using MVCLibraryApp.Services;
+using MVCLibraryApp.Interfaces;
 
 
 
@@ -18,10 +18,10 @@ namespace MVCLibraryApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BezoekerModel> _userManager;
-        private readonly UserRedirectionService _redirectionService;
+        private readonly IUserRedirectionService _redirectionService;
 
 
-        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, UserRedirectionService redirectionService)
+        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, IUserRedirectionService redirectionService)
         {
             _context = context;
             _userManager = userManager;
