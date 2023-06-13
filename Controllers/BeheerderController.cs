@@ -42,16 +42,17 @@ public class BeheerderController : Controller
             var roles = await _userManager.GetRolesAsync(user);
             usersWithRoles.Add((user, roles));
             var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
-            userLockoutStatus.Add(user.Id, lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now);
+            userLockoutStatus[user.Id] = lockoutEndDate.HasValue && lockoutEndDate.Value > DateTimeOffset.Now;
         }
 
         ViewBag.Users = users;
         ViewBag.Roles = usersWithRoles.ToDictionary(x => x.Item1.Id, x => x.Item2);
         ViewBag.LockoutStatus = userLockoutStatus;
+        ViewBag.AllUsersBlocked = userLockoutStatus.Values.All(status => status); // Set the overall status
 
         return View(users);
-
     }
+
     // GET: ItemModels/Delete/5
     public async Task<IActionResult> DeleteItem(int? id)
     {
@@ -228,6 +229,31 @@ public class BeheerderController : Controller
 
         return NotFound();
     }
+
+    [HttpPost]
+    public async Task<IActionResult> ToggleBlockAllUsers()
+    {
+        var allUsers = await _userManager.Users.ToListAsync();
+
+        var isAnyUserBlocked = allUsers.Any(user => user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now);
+
+        foreach (var user in allUsers)
+        {
+            if (isAnyUserBlocked)
+            {
+                await _userManager.SetLockoutEndDateAsync(user, null); // Unblock all users
+            }
+            else
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue); // Block all users
+            }
+        }
+
+        return RedirectToAction("IndexUser");
+    }
+
+
+
 
     [HttpGet]
     public async Task<IActionResult> EditUser(string id)

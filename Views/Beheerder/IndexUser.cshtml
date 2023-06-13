@@ -10,6 +10,19 @@
     <a asp-area="" asp-controller="Beheerder" asp-action="CreateUser">Add a new user</a>
 </p>
 
+<form asp-controller="Beheerder" asp-action="ToggleBlockAllUsers" method="post">
+    <button type="submit">
+        @if (ViewBag.AllUsersBlocked)
+        {
+            <text>Unblock All Users</text>
+        }
+        else
+        {
+            <text>Block All Users</text>
+        }
+    </button>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -17,6 +30,7 @@
             <th>Role</th>
             <th>Email</th>
             <th>Changes</th>
+         
         </tr>
     </thead>
     <tbody>
