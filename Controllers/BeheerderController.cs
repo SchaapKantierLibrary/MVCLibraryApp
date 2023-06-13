@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Interfaces;
 using MVCLibraryApp.Models;
 using MVCLibraryApp.ViewModels;
+using MVCLibraryApp.Services;
 
 
 [Authorize(Roles = "Beheerder")]
@@ -16,19 +17,25 @@ public class BeheerderController : Controller
     private readonly SignInManager<BezoekerModel> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IAccountService _accountService;
+    private readonly UserRedirectionService _redirectionService;
 
-    public BeheerderController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService)
+    public BeheerderController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService, UserRedirectionService redirectionService)
     {
         _accountService = accountService;
         _context = context;
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        _redirectionService = redirectionService;
     }
 
 
     public async Task<IActionResult> Dashboard()
     {
+        var result = await _redirectionService.GetRedirectBasedOnRole(User);
+        if (result != null)
+            return result;
+
         return View();
     }
     public async Task<IActionResult> IndexUser()

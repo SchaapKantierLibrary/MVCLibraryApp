@@ -10,7 +10,7 @@ using MVCLibraryApp.Interfaces;
 
 namespace MVCLibraryApp.Controllers
 {
-    [Authorize(Roles = "Bezoeker,Medewerker,beheerder")]
+    [Authorize(Roles = "Bezoeker,Medewerker,Beheerder")]
     public class BezoekerController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,40 +18,37 @@ namespace MVCLibraryApp.Controllers
         private readonly SignInManager<BezoekerModel> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IAccountService _accountService;
+        private readonly UserRedirectionService _redirectionService;
 
-        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService)
+        public BezoekerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager, RoleManager<IdentityRole> roleManager, IAccountService accountService, UserRedirectionService redirectionService)
         {
             _accountService = accountService;
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _redirectionService = redirectionService;
         }
 
 
-        public async Task <IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
+            var result = await _redirectionService.GetRedirectBasedOnRole(User);
+            if (result != null)
+                return result;
+
             return View();
         }
+
 
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register()
         {
-            // Check if the user is already authenticated
-            if (User.Identity.IsAuthenticated)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                var roles = await _userManager.GetRolesAsync(user);
-
-                if (roles.Contains("Beheerder"))
-                    return RedirectToAction("Dashboard", "Beheerder");
-                if (roles.Contains("Medewerker"))
-                    return RedirectToAction("Dashboard", "Medewerker");
-                if (roles.Contains("Bezoeker"))
-                    return RedirectToAction("Dashboard", "Bezoeker");
-            }
+            var result = await _redirectionService.GetRedirectBasedOnRole(User);
+            if (result != null)
+                return result;
 
             return View();
         }
@@ -270,18 +267,9 @@ namespace MVCLibraryApp.Controllers
         public async Task<IActionResult> Login()
         {
             // Check if the user is already authenticated
-            if (User.Identity.IsAuthenticated)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                var roles = await _userManager.GetRolesAsync(user);
-
-                if (roles.Contains("Beheerder"))
-                    return RedirectToAction("Dashboard", "Beheerder");
-                if (roles.Contains("Medewerker"))
-                    return RedirectToAction("Dashboard", "Medewerker");
-                if (roles.Contains("Bezoeker"))
-                    return RedirectToAction("Dashboard", "Bezoeker");
-            }
+            var result = await _redirectionService.GetRedirectBasedOnRole(User);
+            if (result != null)
+                return result;
 
             return View();
         }

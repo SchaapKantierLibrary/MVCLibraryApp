@@ -38,7 +38,12 @@ namespace MVCLibraryApp
             });
 
             // Register the Account Service
-            builder.Services.AddScoped<IAccountService, AccountService>();  // Add this line before building the app
+            builder.Services.AddScoped<IAccountService, AccountService>();
+
+            // Register the User Redirection Service
+            builder.Services.AddScoped<UserRedirectionService>(); // Add this line before building the app
+
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
@@ -53,6 +58,7 @@ namespace MVCLibraryApp
             }
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();

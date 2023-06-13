@@ -4,24 +4,39 @@ using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Models;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using MVCLibraryApp.Services;
 
 namespace MVCLibraryApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context; // Define the context variable here
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<BezoekerModel> _userManager; // Add the _userManager field
+        private readonly UserRedirectionService _redirectionService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context) // Inject the context in the constructor
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<BezoekerModel> userManager, UserRedirectionService redirectionService) // Add redirectionService to the parameters
         {
             _logger = logger;
-            _context = context; // Assign the injected context to the private variable
+            _context = context;
+            _userManager = userManager; // Assign the injected userManager to the private field
+            _redirectionService = redirectionService; // Assign the injected redirectionService to the private field
         }
+       
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var result = await _redirectionService.GetRedirectBasedOnRole(User);
+            if (result != null)
+                return result;
+
             return View();
         }
+
+
+
 
         public IActionResult Privacy()
         {

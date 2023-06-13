@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using MVCLibraryApp.Services;
 
 
 
@@ -17,19 +18,26 @@ namespace MVCLibraryApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BezoekerModel> _userManager;
+        private readonly UserRedirectionService _redirectionService;
 
 
-        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager)
+        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, UserRedirectionService redirectionService)
         {
             _context = context;
             _userManager = userManager;
+            _redirectionService = redirectionService;
         }
 
 
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
+            var result = await _redirectionService.GetRedirectBasedOnRole(User);
+            if (result != null)
+                return result;
+
             return View();
         }
+
         public async Task<IActionResult> IndexBezoeker()
         {
             var users = await _userManager.GetUsersInRoleAsync("Bezoeker");
