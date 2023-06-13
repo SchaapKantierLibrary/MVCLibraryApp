@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVCLibraryApp.Interfaces;
 using MVCLibraryApp.Models;
+using MVCLibraryApp.ViewModels;
 
 
 [Authorize(Roles = "Beheerder")]
@@ -95,40 +96,117 @@ public class BeheerderController : Controller
         return (_context.Items?.Any(e => e.ID == id)).GetValueOrDefault();
     }
 
-     public async Task<IActionResult> DeleteAuthor(int? id)
+    public async Task<IActionResult> DeleteAuthor(int? id)
+    {
+        if (id == null || _context.Auteurs == null)
         {
-            if (id == null || _context.Auteurs == null)
-            {
-                return NotFound();
-            }
-
-            var auteurModel = await _context.Auteurs
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (auteurModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(auteurModel);
+            return NotFound();
         }
 
-        // POST: AuteurModels/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAuthorConfirmed(int id)
+        var auteurModel = await _context.Auteurs
+            .FirstOrDefaultAsync(m => m.ID == id);
+        if (auteurModel == null)
         {
-            if (_context.Auteurs == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Auteurs'  is null.");
-            }
-            var auteurModel = await _context.Auteurs.FindAsync(id);
-            if (auteurModel != null)
-            {
-                _context.Auteurs.Remove(auteurModel);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction("IndexAuthor", "Medewerker");
+            return NotFound();
         }
+
+        return View(auteurModel);
+    }
+
+    // POST: AuteurModels/Delete/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteAuthorConfirmed(int id)
+    {
+        if (_context.Auteurs == null)
+        {
+            return Problem("Entity set 'ApplicationDbContext.Auteurs'  is null.");
+        }
+        var auteurModel = await _context.Auteurs.FindAsync(id);
+        if (auteurModel != null)
+        {
+            _context.Auteurs.Remove(auteurModel);
+        }
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction("IndexAuthor", "Medewerker");
+    }
+
+
+    public IActionResult CreateUser()
+    {
+        try
+        {
+            var abonnementenList = _context.Abonnementen.ToList();
+            var rolesList = _roleManager.Roles.Select(r => r.Name).ToList();
+            ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type");
+            ViewBag.Roles = new SelectList(rolesList);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateUser(UserViewModel model)
+    {
+        try
+        {
+            if (ModelState.IsValid)
+            {
+                var abonnement = _context.Abonnementen.Find(model.AbonnementID);
+                if (abonnement != null)
+                {
+                    var user = new BezoekerModel
+                    {
+                        UserName = model.Email,
+                        Email = model.Email,
+                        Naam = model.Naam, // Added this line
+                        AbonnementID = model.AbonnementID, // Added this line
+                    };
+
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, model.Role);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(IndexUser));
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid Abonnement ID.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        try
+        {
+            var abonnementenList = _context.Abonnementen.ToList();
+            var rolesList = _roleManager.Roles.Select(r => r.Name).ToList();
+            ViewBag.Abonnementen = new SelectList(abonnementenList, "ID", "Type");
+            ViewBag.Roles = new SelectList(rolesList);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        return View(model);
+    }
+
+
 
 }
