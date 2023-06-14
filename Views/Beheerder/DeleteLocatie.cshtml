@@ -22,7 +22,7 @@
 
         @if (Model.Items != null && Model.Items.Any())
         {
-            <h5>Items associated with this location:</h5>
+            <h5>Deleting this location will also delete all the items in it! Below are the associated items.</h5>
             <table class="table">
                 <thead>
                     <tr>
@@ -49,7 +49,7 @@
         <form asp-action="DeleteLocatieConfirmed">
             <input type="hidden" asp-for="ID" />
             <input type="submit" value="Delete" class="btn btn-danger" /> |
-            <a asp-action="Index">Back to List</a>
+            <a asp-action="IndexLocatie">Back to List</a>
         </form>
     </div>
 </div>
