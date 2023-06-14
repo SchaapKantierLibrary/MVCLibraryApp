@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public static class DbInitializer
 {
-    public static async Task Initialize(ApplicationDbContext context, UserManager<BezoekerModel> userManager, RoleManager<IdentityRole> roleManager)
+    public static async Task Initialize(ApplicationDbContext context, UserManager<VisitorModel> userManager, RoleManager<IdentityRole> roleManager)
     {
         context.Database.EnsureCreated();
 
@@ -16,9 +16,9 @@ public static class DbInitializer
        
     }
 
-    public static async Task SeedUsersAndRoles(UserManager<BezoekerModel> userManager, RoleManager<IdentityRole> roleManager)
+    public static async Task SeedUsersAndRoles(UserManager<VisitorModel> userManager, RoleManager<IdentityRole> roleManager)
     {
-        var roleNames = new[] { "Bezoeker", "Medewerker", "Beheerder" };
+        var roleNames = new[] { "Visitor", "Employee", "Admin" };
 
         // Seed roles
         foreach (var roleName in roleNames)
@@ -40,11 +40,11 @@ public static class DbInitializer
 
             if ((await userManager.FindByNameAsync(userName)) == null)
             {
-                var user = new BezoekerModel
+                var user = new VisitorModel
                 {
                     UserName = userName,
                     Email = userName,
-                    Naam = faker.Name.FullName(),
+                    Name = faker.Name.FullName(),
                     AbonnementID = 1
             };
 
@@ -52,18 +52,18 @@ public static class DbInitializer
                 if (result.Succeeded)
                 {
                     // Assign role to the user
-                    await userManager.AddToRoleAsync(user, "Bezoeker");
+                    await userManager.AddToRoleAsync(user, "Visitor");
                 }
             }
         }
 
         // Seed admin user
-        var adminUser = new BezoekerModel
+        var adminUser = new VisitorModel
         {
             UserName = "admin@example.com",
             Email = "admin@example.com",
             AbonnementID = 1,
-            Naam = "Admin User" // Provide a non-null value for the Naam property
+            Name = "Admin User" // Provide a non-null value for the Name property
         };
 
         var adminPassword = "Password123!";
@@ -72,15 +72,15 @@ public static class DbInitializer
 
         if (adminUserResult.Succeeded)
         {
-            await userManager.AddToRoleAsync(adminUser, "Beheerder");
+            await userManager.AddToRoleAsync(adminUser, "Admin");
         }
-        // Seed Medewerker
-        var MedewerkerUser = new BezoekerModel
+        // Seed Employee
+        var MedewerkerUser = new VisitorModel
         {
-            UserName = "Medewerker@example.com",
-            Email = "Medewerker@example.com",
+            UserName = "Employee@example.com",
+            Email = "Employee@example.com",
             AbonnementID = 1,
-            Naam = "Medewerker" // Provide a non-null value for the Naam property
+            Name = "Employee" // Provide a non-null value for the Name property
         };
 
         var MedewerkerPassword = "Password123!";
@@ -89,7 +89,7 @@ public static class DbInitializer
 
         if (MedewerkerUserResult.Succeeded)
         {
-            await userManager.AddToRoleAsync(MedewerkerUser, "Medewerker");
+            await userManager.AddToRoleAsync(MedewerkerUser, "Employee");
         }
     }
 }

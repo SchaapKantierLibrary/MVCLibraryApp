@@ -8,10 +8,10 @@ namespace MVCLibraryApp.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly UserManager<BezoekerModel> _userManager;
-        private readonly SignInManager<BezoekerModel> _signInManager;
+        private readonly UserManager<VisitorModel> _userManager;
+        private readonly SignInManager<VisitorModel> _signInManager;
 
-        public AccountService(UserManager<BezoekerModel> userManager, SignInManager<BezoekerModel> signInManager)
+        public AccountService(UserManager<VisitorModel> userManager, SignInManager<VisitorModel> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -19,19 +19,19 @@ namespace MVCLibraryApp.Services
 
         public async Task<IdentityResult> RegisterUser(RegisterModel model)
         {
-            var user = new BezoekerModel
+            var user = new VisitorModel
             {
                 UserName = model.Email,
                 Email = model.Email,
-                Naam = model.Naam,
+                Name = model.Name,
                 AbonnementID = 1
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                // Adding the user to the 'Bezoeker' role
-                await _userManager.AddToRoleAsync(user, "Bezoeker");
+                // Adding the user to the 'Visitor' role
+                await _userManager.AddToRoleAsync(user, "Visitor");
                 await _signInManager.SignInAsync(user, isPersistent: false); // Log in the user
             }
             return result;
@@ -47,7 +47,7 @@ namespace MVCLibraryApp.Services
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<BezoekerModel> GetUser(ClaimsPrincipal user)
+        public async Task<VisitorModel> GetUser(ClaimsPrincipal user)
         {
             return await _userManager.GetUserAsync(user);
         }

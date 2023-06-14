@@ -28,15 +28,15 @@ namespace MVCLibraryApp
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddDefaultIdentity<BezoekerModel>()
+            builder.Services.AddDefaultIdentity<VisitorModel>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
      
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.AccessDeniedPath = "/Bezoeker/Login";
-                options.LoginPath = "/Bezoeker/Login";
+                options.AccessDeniedPath = "/Visitor/Login";
+                options.LoginPath = "/Visitor/Login";
             });
 
         
@@ -75,7 +75,7 @@ namespace MVCLibraryApp
             app.MapControllerRoute(
                 name: "logout",
                 pattern: "Account/Logout",
-                defaults: new { controller = "Bezoeker", action = "Logout" }
+                defaults: new { controller = "Visitor", action = "Logout" }
             );
 
             app.MapControllerRoute(
@@ -85,8 +85,8 @@ namespace MVCLibraryApp
 
             app.MapControllerRoute(
                 name: "dashboard",
-                pattern: "Bezoeker/Dashboard",
-                defaults: new { controller = "Bezoeker", action = "Dashboard" }
+                pattern: "Visitor/Dashboard",
+                defaults: new { controller = "Visitor", action = "Dashboard" }
             );
 
 
@@ -96,7 +96,7 @@ namespace MVCLibraryApp
             try
             {
                 var context = services.GetRequiredService<ApplicationDbContext>();
-                var userManager = services.GetRequiredService<UserManager<BezoekerModel>>();
+                var userManager = services.GetRequiredService<UserManager<VisitorModel>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 await DbInitializer.Initialize(context, userManager, roleManager);
             }

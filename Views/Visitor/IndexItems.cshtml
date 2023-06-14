@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "IndexItems";
+}
+@{
+    var errorMessage = ViewData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+<div class="my-4">
+    <h2>Where are you?</h2>
+    <form method="post" action="@Url.Action("IndexItems", "Visitor")">
+        <input type="hidden" name="selectedLocationId" value="@ViewBag.SelectedLocationId" />
+        <select id="locationDropdown" class="form-control" name="locationId">
+            @foreach (var location in ViewBag.Locations)
+            {
+                if (location.ID == ViewBag.SelectedLocationId)
+                {
+                    <option value="@location.ID" selected>@location.Beschrijving</option>
+                }
+                else
+                {
+                    <option value="@location.ID">@location.Beschrijving</option>
+                }
+            }
+        </select>
+        <input type="text" class="form-control" name="title" value="" placeholder="Search Items" />
+        <input type="text" class="form-control" name="authorSearch" value="" placeholder="Search authors" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+@if (ViewBag.Items != null && ViewBag.Items.Count > 0)
+{
+    <h2>Items:</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Year of Publication</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.Items)
+            {
+                <tr>
+                    <th scope="row">@item.ID</th>
+                    <td>@item.Titel</td>
+                    <td>@item.Auteur.Name</td>
+                    <td>@item.Publicatiejaar</td>
+                    <td>@item.Status</td>
+                    <td>
+                        @if (item.Status != "Not Available") // Show the button only if the item is available
+                        {
+                            <form method="post" action="@Url.Action("ReserveItem", "Visitor")">
+                                <input type="hidden" name="id" value="@item.ID" />
+                                <button type="submit" class="btn btn-primary">Reserve</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}

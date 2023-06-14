@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 
 
-@inject SignInManager<BezoekerModel> SignInManager
-@inject UserManager<BezoekerModel> UserManager
+@inject SignInManager<VisitorModel> SignInManager
+@inject UserManager<VisitorModel> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -40,10 +40,10 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Register">Register</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Visitor" asp-action="Register">Register</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Login">Login</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Visitor" asp-action="Login">Login</a>
                             </li>
                         }
                     

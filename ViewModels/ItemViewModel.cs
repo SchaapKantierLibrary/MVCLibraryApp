@@ -3,8 +3,8 @@
     public class ItemViewModel
     {
         public string Titel { get; set; }
-        public int AuteurID { get; set; }
-        public int Publicatiejaar { get; set; }
-        public int LocatieID { get; set; }
+        public int AuthorID { get; set; }
+        public int PublicationYear { get; set; }
+        public int LocationID { get; set; }
     }
 }

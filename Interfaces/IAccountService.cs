@@ -10,7 +10,7 @@ namespace MVCLibraryApp.Interfaces
         Task<IdentityResult> RegisterUser(RegisterModel model);
         Task<SignInResult> LoginUser(LoginModel model);
         Task LogoutUser();
-        Task<BezoekerModel> GetUser(ClaimsPrincipal user);
+        Task<VisitorModel> GetUser(ClaimsPrincipal user);
     }
 
 }

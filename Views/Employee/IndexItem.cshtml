@@ -1,0 +1,63 @@
+﻿@model IEnumerable<MVCLibraryApp.Models.ItemModel>
+
+@{
+    ViewData["Title"] = "IndexItem";
+}
+
+<h1>Items Index</h1>
+
+<p>
+    <a asp-action="CreateItem">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PublicationYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublicationYear)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location.ID)
+            </td>
+            <td>
+                <a asp-action="EditItem" asp-route-id="@item.ID">Edit</a> 
+                <a asp-action="DetailsItem" asp-route-id="@item.ID">Details</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="DeleteItem" asp-controller="Beheerder" asp-route-id="@item.ID">Delete</a>
+ 
+                    }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

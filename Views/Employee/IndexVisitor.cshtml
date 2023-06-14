@@ -1,0 +1,63 @@
+﻿@model IEnumerable<VisitorModel>
+
+@{
+    ViewData["Title"] = "IndexVisitor";
+}
+
+<h2>IndexBezoeker</h2>
+
+<p>
+    <a asp-area="" asp-controller="Medewerker" asp-action="CreateBezoeker">Add a new user</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Membership status</th>
+            <th>Changes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var Visitor in Model)
+        {
+            <tr>
+                <td>@Visitor.UserName</td>
+                <td>
+                    @foreach (var rol in ViewBag.Rol[Visitor.Id])
+                    {
+                        @rol
+                    }
+                </td>
+                <td>@Visitor.Email</td>
+                <td>@Visitor.Abonnement.Type</td>
+                <td>
+                    <a asp-controller="Medewerker" asp-action="EditBezoeker" asp-route-id="@Visitor.Id">Edit</a> |
+
+                    <!-- DELETE Form -->
+                    <form asp-controller="Medewerker" asp-action="DeleteBezoeker" asp-route-id="@Visitor.Id" method="post" style="display: inline-block;">
+                        <button type="submit">Delete</button>
+                    </form>
+
+                </td>
+                <td>
+                    <form asp-controller="Medewerker" asp-action="ToggleBlockUser" method="post">
+                        <input type="hidden" name="id" value="@Visitor.Id" />
+                        <button type="submit">
+                            @if (ViewBag.LockoutStatus[Visitor.Id])
+                            {
+                                <text>Unblock</text>
+                            }
+                            else
+                            {
+                                <text>Block</text>
+                            }
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
