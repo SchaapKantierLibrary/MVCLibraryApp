@@ -8,8 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MVCLibraryApp.Interfaces;
-
-
+using MVCLibraryApp.Data;
 
 namespace MVCLibraryApp.Controllers
 {
@@ -19,13 +18,15 @@ namespace MVCLibraryApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BezoekerModel> _userManager;
         private readonly IUserRedirectionService _redirectionService;
+        private readonly IGenerateInvoiceService _generateInvoiceService;
 
 
-        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, IUserRedirectionService redirectionService)
+        public MedewerkerController(ApplicationDbContext context, UserManager<BezoekerModel> userManager, IUserRedirectionService redirectionService, IGenerateInvoiceService generateInvoiceService)
         {
             _context = context;
             _userManager = userManager;
             _redirectionService = redirectionService;
+            _generateInvoiceService = generateInvoiceService;
         }
 
 
@@ -282,64 +283,8 @@ namespace MVCLibraryApp.Controllers
 
         private FactuurModel CalculateFineAndGenerateInvoice(LeningModel lending, BezoekerModel user)
         {
-            var subscription = _context.Abonnementen.Find(user.AbonnementID);
-            if (subscription == null)
-                throw new Exception("Subscription not found");
-
-            var overdueDays = (DateTime.Now - lending.Einddatum).Days;
-
-            var fineAmount = overdueDays > 0 ? overdueDays * subscription.Boetekosten : 0;
-
-            // Add fine to Geldbank only if there are overdue days
-            var geldbank = _context.Geldbank.FirstOrDefault();
-            if (geldbank == null)
-            {
-                geldbank = new GeldbankModel();
-                _context.Geldbank.Add(geldbank);
-            }
-
-            if (overdueDays > 0)
-            {
-                geldbank.TotalEarnings += fineAmount;
-            }
-
-            // Check if an invoice already exists for the given ItemID and UserId
-            var existingInvoice = _context.Facturen.FirstOrDefault(f =>
-                f.ItemID == lending.ItemID && f.UserId == user.Id);
-
-            FactuurModel invoice;
-
-            if (existingInvoice != null)
-            {
-                // Use the existing invoice if found
-                invoice = existingInvoice;
-                invoice.Amount += fineAmount; // Add fine to the existing invoice amount
-            }
-            else
-            {
-                // Create a new invoice
-                invoice = new FactuurModel
-                {
-                    UserId = user.Id,
-                    ItemID = lending.ItemID,
-                    Amount = fineAmount,
-                    TransactionDate = DateTime.Now,
-                    Description = $"Fine for overdue return of item {lending.ItemID}",
-                    User = user
-                };
-
-                _context.Facturen.Add(invoice);
-            }
-
-            // Calculate reservation cost
-            var reservationCost = subscription.Reserveringskosten;
-            invoice.Amount += reservationCost; // Add reservation cost to the invoice amount
-
-            _context.SaveChanges();
-
-            return invoice;
+            return _generateInvoiceService.CalculateFineAndGenerateInvoice(lending, user);
         }
-
 
 
 

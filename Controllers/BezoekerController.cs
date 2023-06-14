@@ -7,6 +7,7 @@ using MVCLibraryApp.Services;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using MVCLibraryApp.Interfaces;
+using MVCLibraryApp.Data;
 
 namespace MVCLibraryApp.Controllers
 {

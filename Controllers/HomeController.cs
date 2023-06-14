@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using MVCLibraryApp.Interfaces;
+using MVCLibraryApp.Data;
 
 namespace MVCLibraryApp.Controllers
 {

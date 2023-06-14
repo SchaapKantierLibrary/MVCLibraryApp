@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using Bogus;
 using System.Collections.Generic;
+using MVCLibraryApp.Models;
 
-namespace MVCLibraryApp.Models
+namespace MVCLibraryApp.Data
 {
     public class ApplicationDbContext : IdentityDbContext<BezoekerModel>
     {
@@ -29,7 +30,7 @@ namespace MVCLibraryApp.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-   
+
 
 
             base.OnModelCreating(modelBuilder);
@@ -126,7 +127,7 @@ namespace MVCLibraryApp.Models
 
         private void SeedAuteurs(ModelBuilder builder)
         {
-            var faker = new Bogus.Faker();
+            var faker = new Faker();
 
             var auteurs = Enumerable.Range(1, 100).Select(index => new AuteurModel
             {
@@ -141,7 +142,7 @@ namespace MVCLibraryApp.Models
 
         private void SeedItems(ModelBuilder builder)
         {
-            var faker = new Bogus.Faker();
+            var faker = new Faker();
 
             var items = Enumerable.Range(1, 100).Select(index => new ItemModel
             {

@@ -7,7 +7,7 @@ using MVCLibraryApp.Interfaces;
 using MVCLibraryApp.Models;
 using MVCLibraryApp.ViewModels;
 using MVCLibraryApp.Services;
-
+using MVCLibraryApp.Data;
 
 [Authorize(Roles = "Beheerder")]
 public class BeheerderController : Controller

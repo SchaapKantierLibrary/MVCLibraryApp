@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
 using MVCLibraryApp.Interfaces;
 using MVCLibraryApp.Services;
+using MVCLibraryApp.Data;
 
 namespace MVCLibraryApp
 {
@@ -19,41 +20,41 @@ namespace MVCLibraryApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider(); // Add this line
+            
+            builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider(); 
 
-            builder.Services.AddSession(); // Add this line
+            builder.Services.AddSession(); 
 
-            // Register the ApplicationDbContext DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Register the ApplicationDbContext DbContext and Identity services
             builder.Services.AddDefaultIdentity<BezoekerModel>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            // Configure cookies and authentication options
+     
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = "/Bezoeker/Login";
                 options.LoginPath = "/Bezoeker/Login";
             });
 
-            // Register the Account Service
+        
             builder.Services.AddScoped<IAccountService, AccountService>();
 
-            // Register the User Redirection Service
-            builder.Services.AddScoped<IUserRedirectionService, UserRedirectionService>(); // Add this line before building the app
+          
+            builder.Services.AddScoped<IUserRedirectionService, UserRedirectionService>(); 
+
+            builder.Services.AddScoped<IGenerateInvoiceService, GenerateInvoiceService>();
 
             builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
-            // Use Session here
-            app.UseSession(); // Add this line
+            
+            app.UseSession();
 
-            // Configure the HTTP request pipeline.
+          
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -66,7 +67,7 @@ namespace MVCLibraryApp
 
             app.UseRouting();
 
-            // Add authentication
+         
             app.UseAuthentication();
 
             app.UseAuthorization();
