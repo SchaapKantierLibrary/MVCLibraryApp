@@ -26,11 +26,9 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Dashboard</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -48,30 +46,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Login">Login</a>
                             </li>
                         }
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            var user = await UserManager.GetUserAsync(User);
-                            if (user == null)
-                            {
-                                await SignInManager.SignOutAsync();
-                            }
-                            else
-                            {
-                                var roles = await UserManager.GetRolesAsync(user);
-                                if (roles.Contains("Bezoeker"))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Bezoeker" asp-action="Beheer">Beheer</a>
-                                    </li>
-                                }
-                                else if (roles.Contains("Medewerker")) // Changed from 'else' to 'else if'
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Medewerker" asp-action="LeningenBeheer">LeningenBeheer</a>
-                                    </li>
-                                }
-                            }
-                        }
+                    
 
                     </ul>
                 </div>

@@ -34,37 +34,5 @@ namespace MVCLibraryApp.Controllers
 
             return View();
         }
-
-
-
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-        public IActionResult Dashboard()
-        {
-            // Get the list of locations to populate the dropdown
-            ViewBag.Locations = _context.Locaties.ToList();
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Dashboard(int locationId)
-        {
-            // Get the list of locations to populate the dropdown
-            ViewBag.Locations = _context.Locaties.ToList();
-
-            // Get the list of items for the selected location
-            ViewBag.Items = _context.Items.Where(i => i.LocatieID == locationId).ToList();
-
-            return View();
-        }
     }
 }
