@@ -703,6 +703,7 @@ namespace MVCLibraryApp.Controllers
         // POST: AbonnementModels/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: AbonnementModels/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAbonnement([Bind("ID,Type,MaximaleItems,Uitleentermijn,Verlengingen,Reserveringskosten,Boetekosten,Abonnementskosten")] AbonnementModel abonnementModel)
@@ -711,10 +712,20 @@ namespace MVCLibraryApp.Controllers
             {
                 _context.Add(abonnementModel);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexAbonnement));
+            }
+            else
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
             }
             return View(abonnementModel);
         }
+
+
 
         // GET: AbonnementModels/Edit/5
         public async Task<IActionResult> EditAbonnement(int? id)
@@ -762,7 +773,7 @@ namespace MVCLibraryApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexAbonnement));
             }
             return View(abonnementModel);
         }
@@ -786,9 +797,9 @@ namespace MVCLibraryApp.Controllers
         }
 
         // POST: AbonnementModels/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteAbonnementConfirmed(int id)
         {
             if (_context.Abonnementen == null)
             {
@@ -801,7 +812,7 @@ namespace MVCLibraryApp.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(IndexAbonnement));
         }
 
         private bool AbonnementModelExists(int id)
