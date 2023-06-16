@@ -778,42 +778,6 @@ namespace MVCLibraryApp.Controllers
             return View(abonnementModel);
         }
 
-        // GET: AbonnementModels/Delete/5
-        public async Task<IActionResult> DeleteAbonnement(int? id)
-        {
-            if (id == null || _context.Abonnementen == null)
-            {
-                return NotFound();
-            }
-
-            var abonnementModel = await _context.Abonnementen
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (abonnementModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(abonnementModel);
-        }
-
-        // POST: AbonnementModels/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteAbonnementConfirmed(int id)
-        {
-            if (_context.Abonnementen == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Abonnementen'  is null.");
-            }
-            var abonnementModel = await _context.Abonnementen.FindAsync(id);
-            if (abonnementModel != null)
-            {
-                _context.Abonnementen.Remove(abonnementModel);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(IndexAbonnement));
-        }
 
         private bool AbonnementModelExists(int id)
         {
