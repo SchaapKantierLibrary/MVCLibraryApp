@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCLibraryApp", "MVCLibrary
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestMVCLibraryApp", "..\TestMVCLibraryApp\UnitTestMVCLibraryApp.csproj", "{F4DEEBC4-0F2B-47FB-ACEC-B910FA60D4D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UITestMVCLibraryApp", "..\UITestMVCLibraryApp\UITestMVCLibraryApp.csproj", "{7388882F-02F5-4A7F-816A-5F6D2C7598D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITestMVCLibraryApp", "..\UITestMVCLibraryApp\UITestMVCLibraryApp.csproj", "{7388882F-02F5-4A7F-816A-5F6D2C7598D9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UIntegrationTestMVCLibraryApp", "..\UIntegrationTestMVCLibraryApp\UIntegrationTestMVCLibraryApp.csproj", "{043F3F79-73D6-4522-9134-4821CD8C3EB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIntegrationTestMVCLibraryApp", "..\UIntegrationTestMVCLibraryApp\UIntegrationTestMVCLibraryApp.csproj", "{043F3F79-73D6-4522-9134-4821CD8C3EB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
